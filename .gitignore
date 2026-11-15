@@ -27,9 +27,10 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env
-.env
+# .env es la PLANTILLA que se commitea (sin claves reales).
+# Las claves de verdad van en .env.local, que nunca se sube.
+.env.local
 .env*.local
-!.env.example
 
 # vercel
 .vercel

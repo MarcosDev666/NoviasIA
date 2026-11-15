@@ -54,7 +54,11 @@ Abrí [http://localhost:3000](http://localhost:3000).
 
 ### Con IA real (opcional) — una sola key
 
-Copiá `.env.example` a `.env.local` y completá **una única variable**:
+Creá un `.env.local` (la plantilla está en `.env`) y completá **una única variable**:
+
+```bash
+cp .env .env.local   # y pegá tu key en NOVIASIA_API_KEY
+```
 
 ```bash
 NOVIASIA_API_KEY=gsk_tu_key_aca

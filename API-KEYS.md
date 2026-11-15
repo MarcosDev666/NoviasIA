@@ -34,11 +34,15 @@ En la raíz del proyecto, un archivo llamado exactamente `.env.local` con una l�
 NOVIASIA_API_KEY=gsk_tu_key_real
 ```
 
-¿Ya tenés un `.env.example`? Copialo y completá el valor:
+La plantilla ya viene en el repo como **`.env`** (vacía, sin claves). Copiala y completá
+el valor:
 
 ```bash
-cp .env.example .env.local
+cp .env .env.local
 ```
+
+> El archivo que se commitea es `.env` **sin key**. Tu key va en `.env.local`, que está
+> en `.gitignore` y nunca se sube a GitHub.
 
 ### 3. Reiniciá el server
 
