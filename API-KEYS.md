@@ -1,179 +1,111 @@
-# 🔑 Dónde conseguir cada API key
+# 🔑 La API key (una sola)
 
-NoviasIA **funciona sin ninguna key**: usa el motor local de personalidades
-(`lib/persona.ts`). Si querés que las respuestas las escriba un LLM de verdad, elegí
-**un** proveedor de esta lista, sacá la key y pegala en `.env.local`.
+NoviasIA usa **una única variable de entorno**:
 
-> ⚠️ **Regla de oro:** la key va siempre en `.env.local` (que está en `.gitignore`).
-> Nunca la commitees, nunca la pongas en el frontend.
+```bash
+NOVIASIA_API_KEY=tu_key_aca
+```
+
+Nada más. No hay seis variables, ni prioridades, ni proveedores que se pisan.
+
+> **Si no la configurás, la app funciona igual.** Usa el motor local de personalidades
+> (`lib/persona.ts`). La key sólo hace que las respuestas las escriba un LLM de verdad.
+
+> ⚠️ La key va en `.env.local` (que está en `.gitignore`). Nunca la commitees ni la pongas
+> en el frontend.
 
 ---
 
-## 🥇 Recomendado: Groq — rápido, gratis y sin tarjeta
+## Paso a paso (2 minutos)
 
-**Consola:** https://console.groq.com/keys
+### 1. Sacá la key de Groq — gratis y sin tarjeta
 
-1. Entrá a https://console.groq.com y creá la cuenta con Google, GitHub o email.
+1. Entrá a **https://console.groq.com** y registrate con Google, GitHub o email.
 2. Verificá el email.
-3. Andá a **API Keys** (https://console.groq.com/keys) → **Create API Key**.
-4. Ponele un nombre (ej: `noviasia-local`) y **copiala en el momento**: no se vuelve a mostrar.
-5. Pegala en `.env.local`:
+3. Andá a **https://console.groq.com/keys** → **Create API Key**.
+4. Ponele un nombre (ej: `noviasia`) y **copiala en el momento**: no se vuelve a mostrar.
+   Arranca con `gsk_`.
+
+### 2. Creá el archivo `.env.local`
+
+En la raíz del proyecto, un archivo llamado exactamente `.env.local` con una línea:
 
 ```bash
-GROQ_API_KEY=gsk_...
+NOVIASIA_API_KEY=gsk_tu_key_real
 ```
 
-- La key arranca con `gsk_`.
-- **No pide tarjeta.**
-- Tier gratis: ~**14.400 pedidos por día** con `llama-3.1-8b-instant`, 30 por minuto.
-  Es de lejos el más generoso para este proyecto.
-- Modelo por defecto: `llama-3.1-8b-instant`. Podés cambiarlo con `NOVIASIA_MODEL`.
-
----
-
-## 🥈 OpenRouter — un solo key para cientos de modelos
-
-**Consola:** https://openrouter.ai/keys
-
-1. Entrá a https://openrouter.ai y registrate (con Google/GitHub alcanza).
-2. Andá a https://openrouter.ai/keys → **Create Key**.
-3. Copiala (arranca con `sk-or-`).
+¿Ya tenés un `.env.example`? Copialo y completá el valor:
 
 ```bash
-OPENROUTER_API_KEY=sk-or-v1-...
-NOVIASIA_MODEL=meta-llama/llama-3.3-70b-instruct:free
+cp .env.example .env.local
 ```
 
-**Muy importante:** el modelo **tiene que terminar en `:free`**. Sin ese sufijo te cobra
-créditos (y si no tenés saldo, te da error 402).
-
-- Tier gratis: **50 pedidos por día** y 20 por minuto. Si cargás US$10 de crédito, sube a
-  **1.000 por día**.
-- Lista de modelos gratis: https://openrouter.ai/models?max_price=0
-- Truco: podés poner `openrouter/free` como modelo y OpenRouter elige uno gratis por vos.
-
----
-
-## 🥉 Cerebras — el más rápido de todos
-
-**Consola:** https://cloud.cerebras.ai → *API Keys*
-
-1. Registrate en https://cloud.cerebras.ai (sin tarjeta).
-2. En el menú, **API Keys** → **Create API key**.
-3. Copiala.
-
-```bash
-CEREBRAS_API_KEY=csk-...
-```
-
-- Tier gratis con límites de rate (alcanza para probar y para uso personal).
-- Inferencia a miles de tokens por segundo: la respuesta aparece casi instantánea.
-- Modelo por defecto: `llama3.1-8b`.
-
----
-
-## Mistral — plan "Experiment" gratis
-
-**Consola:** https://console.mistral.ai/api-keys
-
-1. Cuenta en https://console.mistral.ai (la verificación pide teléfono).
-2. **API Keys** → **Create new key**.
-3. Copiala.
-
-```bash
-MISTRAL_API_KEY=...
-```
-
-- El plan *Experiment* es gratis y con límites de rate (bajo: ~1 request/segundo).
-- Modelo por defecto: `mistral-small-latest`.
-- Ojo: en el plan gratis los datos pueden usarse para mejorar el modelo salvo que lo
-  desactives en la configuración.
-
----
-
-## Together AI — tenés que cargar saldo
-
-**Consola:** https://api.together.xyz/settings/api-keys
-
-1. Cuenta en https://api.together.xyz
-2. **Settings → API Keys** → **Create key**.
-
-```bash
-TOGETHER_API_KEY=...
-```
-
-- Casi siempre requiere cargar crédito (mínimo ~US$5) para que la key funcione. No es el
-  camino si querés cero costo.
-- Algunos modelos tienen un tier gratis limitado, pero cambia seguido.
-
----
-
-## OpenAI (o cualquier API compatible)
-
-**Consola:** https://platform.openai.com/api-keys
-
-1. Cuenta en https://platform.openai.com
-2. **API keys** → **Create new secret key**.
-
-```bash
-OPENAI_API_KEY=sk-...
-# Opcional, para apuntar a otro proveedor compatible con la API de OpenAI:
-# OPENAI_BASE_URL=https://mi-proxy.com/v1
-```
-
-- **Requiere cargar crédito** antes de que la key funcione. Es la opción más cara para
-  este proyecto: no la necesitás para nada.
-
----
-
-## Cómo saber si quedó bien configurada
+### 3. Reiniciá el server
 
 ```bash
 npm run dev
 ```
 
-En otra terminal:
+### 4. Comprobá
 
 ```bash
 curl http://localhost:3000/api/chat
 ```
 
-- Si devuelve `{"engine":"local",...}` → **no está tomando ninguna key**.
-  Revisá que el archivo se llame exactamente `.env.local` y esté en la raíz del proyecto.
-- Si devuelve `{"engine":"groq","model":"llama-3.1-8b-instant"}` → **listo**, ya está
-  usando el LLM real.
+- `{"engine":"local","model":"noviasia-engine-v1"}` → no la tomó. Revisá el nombre del
+  archivo (`.env.local`), que esté en la raíz y que hayas reiniciado el server.
+- `{"engine":"api","model":"llama-3.1-8b-instant"}` → **listo**.
 
-Después de editar `.env.local` **reiniciá el servidor** (Ctrl+C y `npm run dev` de nuevo):
-Next no relee las variables en caliente.
-
-El recuadro arriba del chat te muestra qué motor está activo: `motor local` o el nombre
-del modelo.
+En el chat, arriba a la derecha, el recuadro muestra `motor local` o el modelo activo.
 
 ---
 
-## 🆓 ¿Y si no quiero ninguna key?
+## ¿Querés usar otro proveedor?
 
-Perfecto, no hace falta. La app ya responde con el motor local de personalidades
-(`lib/persona.ts`), que detecta la intención del mensaje y contesta según el personaje.
-La diferencia es que las respuestas son más de "plantilla": el LLM improvisa mejor y
-entiende contextos raros. Pero para probar y para la versión `noviasia.html` alcanza y
-sobra.
+Por defecto la app apunta a **Groq**. Si preferís otro, seguís usando **la misma variable**
+`NOVIASIA_API_KEY` y sólo cambiás la URL y el modelo:
+
+| Proveedor | `NOVIASIA_API_URL` | `NOVIASIA_MODEL` | Key gratis en |
+|---|---|---|---|
+| **Groq** (default) | `https://api.groq.com/openai/v1/chat/completions` | `llama-3.1-8b-instant` | https://console.groq.com/keys |
+| OpenRouter | `https://openrouter.ai/api/v1/chat/completions` | `meta-llama/llama-3.3-70b-instruct:free` | https://openrouter.ai/keys |
+| Cerebras | `https://api.cerebras.ai/v1/chat/completions` | `llama3.1-8b` | https://cloud.cerebras.ai |
+| Mistral | `https://api.mistral.ai/v1/chat/completions` | `mistral-small-latest` | https://console.mistral.ai/api-keys |
+| OpenAI | `https://api.openai.com/v1/chat/completions` | `gpt-4o-mini` | https://platform.openai.com/api-keys |
+
+Ejemplo con OpenRouter:
+
+```bash
+NOVIASIA_API_KEY=sk-or-v1-...
+NOVIASIA_API_URL=https://openrouter.ai/api/v1/chat/completions
+NOVIASIA_MODEL=meta-llama/llama-3.3-70b-instruct:free
+```
+
+> En OpenRouter el modelo **tiene que terminar en `:free`**, si no te cobra créditos
+> (y sin saldo te da error 402).
+
+¿Un proveedor que no está en la lista? Si habla el formato de OpenAI
+(`POST /chat/completions` con `choices[0].message.content`), funciona: poné su URL.
+
+---
+
+## Qué pasa si la key es inválida o se cae la red
+
+La app **no se rompe**: detecta el error y contesta con el motor local. Probado con keys
+falsas (`gsk_fake`) → devuelve `{"reply":"...","source":"local"}`.
 
 ---
 
 ## Resumen
 
-| Proveedor | Link | ¿Tarjeta? | Gratis | Modelo por defecto |
-|---|---|---|---|---|
-| **Groq** ⭐ | https://console.groq.com/keys | No | ~14.400/día | `llama-3.1-8b-instant` |
-| **OpenRouter** | https://openrouter.ai/keys | No | 50/día (1.000 con US$10) | `...llama-3.3-70b:free` |
-| **Cerebras** | https://cloud.cerebras.ai | No | Rate limit | `llama3.1-8b` |
-| **Mistral** | https://console.mistral.ai/api-keys | No (teléfono) | Plan Experiment | `mistral-small-latest` |
-| **Together** | https://api.together.xyz/settings/api-keys | Sí (saldo) | Limitado | `Llama-3.3-70B-Instruct-Turbo` |
-| **OpenAI** | https://platform.openai.com/api-keys | Sí (saldo) | No | `gpt-4o-mini` |
-
-Orden de preferencia si configurás varias: **Groq → Cerebras → OpenRouter → Mistral →
-Together → OpenAI**. Se puede forzar el modelo con `NOVIASIA_MODEL`.
+| | |
+|---|---|
+| Variable | `NOVIASIA_API_KEY` |
+| Obligatoria | No |
+| Dónde va | `.env.local` |
+| Proveedor por defecto | Groq (`llama-3.1-8b-instant`) |
+| Costo | $0, sin tarjeta |
+| Límite gratis | ~14.400 pedidos/día |
 
 *Los límites y URLs son de noviembre de 2026 y los proveedores los cambian seguido: si
 algo no coincide, la consola del proveedor manda.*

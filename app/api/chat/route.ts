@@ -13,80 +13,31 @@ type Body = {
   userName?: string;
 };
 
+/**
+ * Una sola API key para toda la app: NOVIASIA_API_KEY.
+ *
+ * Habla el formato OpenAI, así que sirve con el proveedor que quieras:
+ * Groq, OpenRouter, Cerebras, Mistral, Together u OpenAI.
+ * Lo único que hay que tocar es NOVIASIA_API_URL y NOVIASIA_MODEL.
+ */
+const DEFAULT_URL = "https://api.groq.com/openai/v1/chat/completions";
+const DEFAULT_MODEL = "llama-3.1-8b-instant";
+
 type Provider = {
   url: string;
   key: string;
   model: string;
-  label: string;
 };
 
-/**
- * Orden de preferencia. El primero que tenga clave configurada gana.
- * Todos los proveedores de la lista hablan el formato OpenAI, así que
- * sólo cambia la URL y el modelo por defecto.
- */
 function resolveProvider(): Provider | null {
-  const pick = (envKey: string, model: string): string | undefined =>
-    process.env[envKey] ? process.env.NOVIASIA_MODEL || model : undefined;
+  const key = (process.env.NOVIASIA_API_KEY || "").trim();
+  if (!key) return null;
 
-  if (process.env.GROQ_API_KEY) {
-    return {
-      url: "https://api.groq.com/openai/v1/chat/completions",
-      key: process.env.GROQ_API_KEY,
-      // Tier gratis generoso: 14.400 pedidos/día y rapidísimo.
-      model: pick("GROQ_API_KEY", "llama-3.1-8b-instant")!,
-      label: "groq",
-    };
-  }
-
-  if (process.env.CEREBRAS_API_KEY) {
-    return {
-      url: "https://api.cerebras.ai/v1/chat/completions",
-      key: process.env.CEREBRAS_API_KEY,
-      model: pick("CEREBRAS_API_KEY", "llama3.1-8b")!,
-      label: "cerebras",
-    };
-  }
-
-  if (process.env.OPENROUTER_API_KEY) {
-    return {
-      url: "https://openrouter.ai/api/v1/chat/completions",
-      key: process.env.OPENROUTER_API_KEY,
-      // OJO: tiene que terminar en ":free" o te cobra créditos.
-      model: pick("OPENROUTER_API_KEY", "meta-llama/llama-3.3-70b-instruct:free")!,
-      label: "openrouter",
-    };
-  }
-
-  if (process.env.MISTRAL_API_KEY) {
-    return {
-      url: "https://api.mistral.ai/v1/chat/completions",
-      key: process.env.MISTRAL_API_KEY,
-      model: pick("MISTRAL_API_KEY", "mistral-small-latest")!,
-      label: "mistral",
-    };
-  }
-
-  if (process.env.TOGETHER_API_KEY) {
-    return {
-      url: "https://api.together.xyz/v1/chat/completions",
-      key: process.env.TOGETHER_API_KEY,
-      model: pick("TOGETHER_API_KEY", "meta-llama/Llama-3.3-70B-Instruct-Turbo")!,
-      label: "together",
-    };
-  }
-
-  if (process.env.OPENAI_API_KEY) {
-    const base = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
-    return {
-      url: `${base.replace(/\/$/, "")}/chat/completions`,
-      key: process.env.OPENAI_API_KEY,
-      model: pick("OPENAI_API_KEY", "gpt-4o-mini")!,
-      label: "openai",
-    };
-  }
-
-  return null;
+  return {
+    key,
+    url: (process.env.NOVIASIA_API_URL || DEFAULT_URL).trim(),
+    model: (process.env.NOVIASIA_MODEL || DEFAULT_MODEL).trim(),
+  };
 }
 
 function fallback(character: Character, messages: Pick<Message, "role" | "content">[]) {
@@ -172,7 +123,7 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({
       reply: reply.trim().slice(0, 1200),
-      source: provider.label,
+      source: "api",
     });
   } catch {
     return NextResponse.json({ reply: fallback(character, messages), source: "local" });
@@ -182,7 +133,7 @@ export async function POST(req: Request) {
 export async function GET() {
   const provider = resolveProvider();
   return NextResponse.json({
-    engine: provider ? provider.label : "local",
+    engine: provider ? "api" : "local",
     model: provider?.model ?? "noviasia-engine-v1",
   });
 }

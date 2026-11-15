@@ -52,25 +52,29 @@ Abrí [http://localhost:3000](http://localhost:3000).
 > Funciona out of the box, sin ninguna API key. El motor local de personalidades se
 > encarga de que los chats respondan igual.
 
-### Con IA real (opcional)
+### Con IA real (opcional) — una sola key
 
-Copiá `.env.example` a `.env.local` y poné **una** de estas claves (links y paso a paso
-en **[API-KEYS.md](./API-KEYS.md)**):
+Copiá `.env.example` a `.env.local` y completá **una única variable**:
 
-| Proveedor | Dónde sacarla | ¿Tarjeta? | Gratis | Variable |
-|---|---|---|---|---|
-| **Groq** ⭐ | [console.groq.com/keys](https://console.groq.com/keys) | No | ~14.400/día | `GROQ_API_KEY` |
-| **OpenRouter** | [openrouter.ai/keys](https://openrouter.ai/keys) | No | 50/día | `OPENROUTER_API_KEY` |
-| **Cerebras** | [cloud.cerebras.ai](https://cloud.cerebras.ai) | No | rate limit | `CEREBRAS_API_KEY` |
-| **Mistral** | [console.mistral.ai/api-keys](https://console.mistral.ai/api-keys) | No | Plan Experiment | `MISTRAL_API_KEY` |
-| **Together** | [api.together.xyz/settings/api-keys](https://api.together.xyz/settings/api-keys) | Sí | Limitado | `TOGETHER_API_KEY` |
-| **OpenAI** | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | Sí | No | `OPENAI_API_KEY` |
+```bash
+NOVIASIA_API_KEY=gsk_tu_key_aca
+```
 
-Orden de preferencia si configurás varias: Groq → Cerebras → OpenRouter → Mistral →
-Together → OpenAI. Podés forzar el modelo con `NOVIASIA_MODEL`.
+La key la sacás gratis (sin tarjeta) en **https://console.groq.com/keys**.
+Paso a paso completo en **[API-KEYS.md](./API-KEYS.md)**.
 
-Verificá qué motor está activo con `curl localhost:3000/api/chat`. Si el proveedor falla
-o se cae la red, la app vuelve sola al motor local: nunca te quedás sin respuesta.
+Por defecto la app apunta a Groq (`llama-3.1-8b-instant`). Si querés otro proveedor, seguís
+usando la misma variable y sólo agregás dos opcionales:
+
+```bash
+NOVIASIA_API_URL=https://openrouter.ai/api/v1/chat/completions
+NOVIASIA_MODEL=meta-llama/llama-3.3-70b-instruct:free
+```
+
+Verificá qué motor está activo con `curl localhost:3000/api/chat`. Si la key es inválida o
+se cae la red, la app vuelve sola al motor local: nunca te quedás sin respuesta.
+
+Sin ninguna key configurada funciona igual, con el motor local de personalidades.
 
 ## 🗂️ Estructura
 
