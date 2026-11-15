@@ -11,8 +11,17 @@ Nada más. No hay seis variables, ni prioridades, ni proveedores que se pisan.
 > **Si no la configurás, la app funciona igual.** Usa el motor local de personalidades
 > (`lib/persona.ts`). La key sólo hace que las respuestas las escriba un LLM de verdad.
 
-> ⚠️ La key va en `.env.local` (que está en `.gitignore`). Nunca la commitees ni la pongas
-> en el frontend.
+> ## 🚨 Regla número uno
+>
+> **La key va SOLO en `.env.local`**, que está en `.gitignore` y nunca se sube.
+>
+> `.env` es la plantilla del repo y va **siempre vacía**. Si pegás tu key en `.env` o en
+> `.env.example` y hacés push, la key queda publicada en GitHub: cualquiera puede usarla,
+> gastar tu cuota y no hay forma de "despublicarla" del historial (aunque borres el
+> archivo, sigue en los commits viejos).
+>
+> Si te pasa: **revocá la key en la consola del proveedor y generá una nueva.** En Groq es
+> https://console.groq.com/keys → 🗑 junto a la key.
 
 ---
 
