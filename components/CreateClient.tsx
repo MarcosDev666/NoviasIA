@@ -3,9 +3,10 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Sparkles, Wand2, Save, ArrowLeft, Eye } from "lucide-react";
+import { Sparkles, Wand2, Save, ArrowLeft, Eye, Clapperboard } from "lucide-react";
 import Navbar from "./Navbar";
 import Avatar from "./Avatar";
+import ImageField from "./ImageField";
 import { loadCustomCharacters, saveCustomCharacters, uid } from "@/lib/store";
 import { VIBES, type Character, type Trait, type VibeId } from "@/lib/types";
 import { detectVibeFromText } from "@/lib/persona";
@@ -96,6 +97,14 @@ export default function CreateClient() {
   const [emoji, setEmoji] = useState(EMOJIS[0]);
   const [accent, setAccent] = useState<[string, string]>(ACCENTS[0]);
   const [tagsRaw, setTagsRaw] = useState("");
+  const [role, setRole] = useState("");
+  const [avatar, setAvatar] = useState<string | undefined>();
+  const [cover, setCover] = useState<string | undefined>();
+  const [scenesRaw, setScenesRaw] = useState("");
+  const [catchphrasesRaw, setCatchphrasesRaw] = useState("");
+  const [petNamesRaw, setPetNamesRaw] = useState("");
+  const [narrates, setNarrates] = useState(true);
+  const [emojiLevel, setEmojiLevel] = useState(2);
   const [traits, setTraits] = useState<Trait>({
     celos: 6,
     toxica: 5,
@@ -109,6 +118,9 @@ export default function CreateClient() {
     () => ({
       id: "preview",
       name: name || "Tu personaje",
+      role: role || undefined,
+      avatar,
+      cover,
       tagline: tagline || "Una personita con actitud",
       description: description || "Acá va la descripción de su personalidad.",
       greeting:
@@ -131,9 +143,19 @@ export default function CreateClient() {
         "Decime la verdad",
       ],
       traits,
+      scenes: scenesRaw.split("\n").map((x) => x.trim()).filter(Boolean),
+      speech: {
+        narrates,
+        emojiLevel,
+        catchphrases: catchphrasesRaw.split(",").map((x) => x.trim()).filter(Boolean),
+        petNames: petNamesRaw.split(",").map((x) => x.trim()).filter(Boolean),
+      },
       official: false,
     }),
-    [name, tagline, description, greeting, vibe, country, accent, emoji, tagsRaw, traits]
+    [
+      name, tagline, description, greeting, vibe, country, accent, emoji, tagsRaw, traits,
+      role, avatar, cover, scenesRaw, catchphrasesRaw, petNamesRaw, narrates, emojiLevel,
+    ]
   );
 
   const applyPreset = (p: (typeof PRESETS)[number]) => {
@@ -253,6 +275,19 @@ export default function CreateClient() {
                 />
               </Field>
 
+              <Field
+                label="Rol"
+                hint="Qué es para vos (aparece en el chat)"
+              >
+                <input
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  maxLength={40}
+                  placeholder="Ej: tu mejor amiga, tu novia celosa, tu ex…"
+                  className={inputCls}
+                />
+              </Field>
+
               <Field label="Personalidad" hint="Contá cómo es, qué le gusta, qué odia">
                 <textarea
                   value={description}
@@ -327,6 +362,31 @@ export default function CreateClient() {
                 </div>
               </Field>
 
+              <div className="space-y-4 rounded-xl border border-white/[0.07] bg-ink-900/40 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-white/35">
+                  Imágenes del personaje
+                </p>
+                <ImageField
+                  label="Foto de perfil"
+                  hint="Se usa en el chat y en las tarjetas"
+                  value={avatar}
+                  onChange={setAvatar}
+                  aspect="square"
+                  fallback={emoji}
+                />
+                <ImageField
+                  label="Imagen de fondo"
+                  hint="Portada de la tarjeta y del chat"
+                  value={cover}
+                  onChange={setCover}
+                  aspect="wide"
+                />
+                <p className="text-[11px] leading-relaxed text-white/25">
+                  Si no subís nada se usa el emoji con el degradé de colores. Las imágenes se
+                  guardan en tu navegador.
+                </p>
+              </div>
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Emoji / avatar">
                   <div className="flex flex-wrap gap-1.5">
@@ -362,6 +422,87 @@ export default function CreateClient() {
                     ))}
                   </div>
                 </Field>
+              </div>
+            </section>
+
+            <section className="space-y-4 rounded-2xl border border-white/[0.07] bg-ink-850/60 p-5">
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/40">
+                <Clapperboard className="h-3.5 w-3.5" /> Cómo habla y qué hace
+              </p>
+
+              <div className="rounded-xl border border-hot-500/20 bg-hot-500/[0.06] p-3">
+                <p className="text-[11.5px] leading-relaxed text-white/55">
+                  El personaje responde <span className="text-white/85">en rol</span>, con el
+                  formato <code className="rounded bg-white/10 px-1 text-[11px]">*acción*</code>{" "}
+                  y{" "}
+                  <code className="rounded bg-white/10 px-1 text-[11px]">Nombre: texto</code>
+                  . Así: <br />
+                  <span className="mt-1 block italic text-white/70">
+                    *rocio se pone colorada*
+                  </span>
+                  <span className="block text-white/80">Rocio: te amo wachin, te amo todo ❤️</span>
+                </p>
+              </div>
+
+              <Field label="Escenas" hint="Cosas que hace, una por línea">
+                <textarea
+                  value={scenesRaw}
+                  onChange={(e) => setScenesRaw(e.target.value)}
+                  rows={3}
+                  placeholder={"se ríe y te empuja el hombro\nrevolea los ojos\nse pone a cocinar"}
+                  className={`${inputCls} resize-y`}
+                />
+              </Field>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Muletillas" hint="Separadas por coma">
+                  <input
+                    value={catchphrasesRaw}
+                    onChange={(e) => setCatchphrasesRaw(e.target.value)}
+                    placeholder="wachin, posta, dale"
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label="¿Cómo te llama?" hint="Separados por coma">
+                  <input
+                    value={petNamesRaw}
+                    onChange={(e) => setPetNamesRaw(e.target.value)}
+                    placeholder="mi amor, ma, gordo"
+                    className={inputCls}
+                  />
+                </Field>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <label className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    checked={narrates}
+                    onChange={(e) => setNarrates(e.target.checked)}
+                    className="h-4 w-4 rounded border-white/20 bg-ink-900 accent-hot-500"
+                  />
+                  <span className="text-sm text-white/75">
+                    Narrar acciones entre asteriscos
+                  </span>
+                </label>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-white/60">Emojis</span>
+                  {[0, 1, 2, 3].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => setEmojiLevel(n)}
+                      className={`h-8 w-8 rounded-lg border text-xs font-semibold transition ${
+                        emojiLevel === n
+                          ? "border-hot-500 bg-hot-500/20 text-white"
+                          : "border-white/10 bg-white/[0.03] text-white/50 hover:bg-white/10"
+                      }`}
+                      title={`${n} emoji${n === 1 ? "" : "s"} por mensaje`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
               </div>
             </section>
 

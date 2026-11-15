@@ -252,6 +252,17 @@
   .row.me .bubble-wrap{align-items:flex-end}
   .bubble{padding:10px 14px;font-size:14.3px;line-height:1.55;border-radius:16px;
     white-space:pre-wrap;overflow-wrap:break-word}
+  .rp-action{font-size:12.5px;font-style:italic;color:rgba(255,255,255,.45);margin-bottom:4px;
+    padding:0 4px;line-height:1.4}
+  .bubble .who2{font-weight:600;color:rgba(255,255,255,.95);margin-right:5px}
+  /* imágenes de personaje */
+  .card-art img.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    transition:transform .5s}
+  .card:hover .card-art img.cover{transform:scale(1.05)}
+  .card-art .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,.1) 45%,transparent)}
+  .chat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.18;pointer-events:none}
+  .chat-bg-shade{position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(to bottom,rgba(7,7,11,.6),rgba(7,7,11,.85),#07070b)}
   .bubble.bot{background:rgba(21,21,31,.92);border:1px solid var(--stroke);border-top-left-radius:5px;
     color:rgba(255,255,255,.9)}
   .bubble.me{background:linear-gradient(135deg,var(--hot),var(--hot2));color:#fff;border-top-right-radius:5px}
@@ -392,6 +403,11 @@
   .prev-traits .b{height:4px;border-radius:99px;background:rgba(255,255,255,.1);margin:3px 0 7px;overflow:hidden}
   .prev-traits .b i{display:block;height:100%;border-radius:99px}
   .hint{font-size:11px;line-height:1.6;color:rgba(255,255,255,.3);margin-top:12px}
+  .imgprev{width:100%;height:78px;border-radius:10px;border:1px solid rgba(255,255,255,.1);
+    background:rgba(11,11,18,.7) center/cover no-repeat;display:grid;place-items:center;
+    font-size:11px;color:rgba(255,255,255,.25)}
+  .imgprev.wide{height:78px}
+  .imgprev.has{border-color:rgba(255,255,255,.25)}
 
   /* ---------- LISTA CHATS / PERFIL ---------- */
   .narrow{max-width:840px;margin:0 auto;padding:30px 18px 60px}
@@ -574,6 +590,10 @@
             <input class="inp" id="cTag" maxlength="80" placeholder="Ej: La turra del barrio que te ama y te bardea" oninput="updPreview()" />
           </div>
           <div class="field">
+            <span><label for="cRole">Rol</label><em>Qué es para vos</em></span>
+            <input class="inp" id="cRole" maxlength="40" placeholder="Ej: tu mejor amiga, tu novia celosa, tu ex…" oninput="updPreview()" />
+          </div>
+          <div class="field">
             <span><label for="cDesc">Personalidad</label><em>Contá cómo es, qué le gusta, qué odia</em></span>
             <textarea class="inp" id="cDesc" rows="4" maxlength="900" oninput="updPreview()"
               placeholder="Vive en La Matanza, tiene las uñas largas, le encanta el reggaetón y se enoja si no le contestás…"></textarea>
@@ -597,6 +617,32 @@
             <span><label>Estilo</label></span>
             <div class="pick vibe" id="vibePick"></div>
           </div>
+          <div class="field" style="border:1px solid rgba(255,255,255,.07);background:rgba(11,11,18,.4);padding:14px;border-radius:12px">
+            <p class="lbl" style="margin-bottom:11px">Imágenes del personaje</p>
+            <div class="two">
+              <div>
+                <span style="display:block;font-size:12px;color:rgba(255,255,255,.8);margin-bottom:6px">Foto de perfil</span>
+                <div id="avPrev" class="imgprev"></div>
+                <input type="file" id="avFile" accept="image/*" class="hidden" onchange="loadImg(this,'avatar')" />
+                <div style="display:flex;gap:6px;margin-top:6px">
+                  <button type="button" class="preset" onclick="document.getElementById('avFile').click()">📁 Subir</button>
+                  <button type="button" class="preset" onclick="askUrl('avatar')">🔗 Link</button>
+                </div>
+              </div>
+              <div>
+                <span style="display:block;font-size:12px;color:rgba(255,255,255,.8);margin-bottom:6px">Imagen de fondo</span>
+                <div id="coverPrev" class="imgprev wide"></div>
+                <input type="file" id="coverFile" accept="image/*" class="hidden" onchange="loadImg(this,'cover')" />
+                <div style="display:flex;gap:6px;margin-top:6px">
+                  <button type="button" class="preset" onclick="document.getElementById('coverFile').click()">📁 Subir</button>
+                  <button type="button" class="preset" onclick="askUrl('cover')">🔗 Link</button>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin-top:8px">
+              Se guardan en tu navegador. Se comprimen solas.</p>
+          </div>
+
           <div class="two" style="margin-top:15px">
             <div class="field">
               <span><label>Emoji / avatar</label></span>
@@ -605,6 +651,45 @@
             <div class="field">
               <span><label>Colores</label></span>
               <div class="pick color" id="colorPick"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-box">
+          <p class="lbl">🎬 Cómo habla y qué hace</p>
+          <div class="form-box" style="border-color:rgba(255,61,139,.2);background:rgba(255,61,139,.06);margin-bottom:14px">
+            <p style="font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.55)">
+              Responde <b style="color:rgba(255,255,255,.85)">en rol</b> con el formato
+              <code style="background:rgba(255,255,255,.1);padding:1px 4px;border-radius:4px">*acción*</code> +
+              <code style="background:rgba(255,255,255,.1);padding:1px 4px;border-radius:4px">Nombre: texto</code><br />
+              <span style="font-style:italic;color:rgba(255,255,255,.7)">*rocio se pone colorada*</span><br />
+              <span style="color:rgba(255,255,255,.8)">Rocio: te amo wachin, te amo todo ❤️</span>
+            </p>
+          </div>
+          <div class="field">
+            <span><label for="cScenes">Escenas</label><em>Cosas que hace, una por línea</em></span>
+            <textarea class="inp" id="cScenes" rows="3" oninput="updPreview()"
+              placeholder="se ríe y te empuja el hombro&#10;revolea los ojos&#10;se pone a cocinar"></textarea>
+          </div>
+          <div class="two">
+            <div class="field">
+              <span><label for="cCatch">Muletillas</label><em>Separadas por coma</em></span>
+              <input class="inp" id="cCatch" placeholder="wachin, posta, dale" oninput="updPreview()" />
+            </div>
+            <div class="field">
+              <span><label for="cPets">¿Cómo te llama?</label><em>Separados por coma</em></span>
+              <input class="inp" id="cPets" placeholder="mi amor, ma, gordo" oninput="updPreview()" />
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:6px">
+            <label style="display:flex;align-items:center;gap:9px;cursor:pointer">
+              <input type="checkbox" id="cNarrates" checked onchange="updPreview()"
+                style="width:16px;height:16px;accent-color:#ff3d8b" />
+              <span style="font-size:13px;color:rgba(255,255,255,.75)">Narrar acciones entre asteriscos</span>
+            </label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:12.5px;color:rgba(255,255,255,.6)">Emojis</span>
+              <div class="pick vibe" id="emojiLvl" style="gap:4px"></div>
             </div>
           </div>
         </div>
@@ -705,6 +790,8 @@
       <div class="side-list" id="sideList"></div>
     </aside>
     <main class="chat-main">
+      <img class="chat-bg hidden" id="chatBg" alt="" />
+      <div class="chat-bg-shade hidden" id="chatBgShade"></div>
       <div class="msgs" id="msgs"><div class="msgs-in" id="msgsIn"></div></div>
       <div class="composer">
         <div class="composer-in">
@@ -1535,7 +1622,8 @@ const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 const has=(t,ws)=>ws.some(w=>new RegExp("(^|[^a-z])"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"i").test(t));
 
 function intent(raw){
-  const s=norm(raw).trim(); if(!s) return "generic";
+  const s=norm(normalizeForIntent(raw)).replace(/\bte re+\b/g,"te").replace(/\s+/g," ").trim();
+  if(!s) return "generic";
   if(has(s,["hola","holis","buenas","buen dia","hey","holaa","que tal","como estas","como andas"]))return"greeting";
   if(has(s,["te amo","te quiero","te extrano","amor","me gustas","me encantas","sos mi vida","mi vida"]))return"love";
   if(has(s,["puta","forra","bolud","idiota","estupid","pelotud","tarada","callate","zorra","gila","mierda","insoportable","harto de vos"]))return"insult";
@@ -1604,14 +1692,99 @@ const REACT={
 };
 
 const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ---------- motor de rol ---------- */
+function detectIntensity(raw){
+  const t=raw||""; let score=0;
+  const letters=t.replace(/[^a-zA-ZÁÉÍÓÚÑáéíóúñ]/g,"");
+  if(letters.length>3){
+    const upper=t.replace(/[^A-ZÁÉÍÓÚÑ]/g,"").length;
+    if(upper/letters.length>0.6) score++;
+  }
+  if(/([a-záéíóúñ])\1{2,}/i.test(t)) score++;
+  if(/[!?]{2,}/.test(t)) score++;
+  const reps=(t.match(/([a-záéíóúñ])\1{2,}/gi)||[]).length;
+  if(reps>=2) score++;
+  const hearts=(t.match(/[❤💕💖💗💓💞🥰😍💘]/g)||[]).length;
+  if(hearts>=2) score++;
+  return Math.min(score,3);
+}
+function normalizeForIntent(raw){
+  return (raw||"").toLowerCase().replace(/([a-záéíóúñ])\1+/gi,"$1");
+}
+
+const ACTIONS={
+  greeting:["te mira de reojo y sonríe","deja el celular un segundo para mirarte","se acomoda el pelo","levanta la vista de golpe"],
+  love:["se pone colorada hasta las orejas","sonríe como una tonta mirando la pantalla","se muerde el labio y no sabe qué contestar","abraza el almohadón con fuerza","suspira hondo"],
+  insult:["abre grande los ojos","cruza los brazos","levanta una ceja, incrédula"],
+  apology:["baja la mirada","suspira y se pasa la mano por la cara","se queda callada unos segundos"],
+  excuse:["revisa la hora en el celular","se ríe sin ganas","niega con la cabeza"],
+  ex:["revolea los ojos con fuerza","aprieta los dientes","deja el celular sobre la mesa de golpe"],
+  jealousy:["te estudia la cara buscando algo","se queda en silencio un segundo de más","juega con el borde de la manga"],
+  food:["se agarra la panza","abre la heladera mentalmente","se relame"],
+  plan:["ya está pensando qué ponerse","se entusiasma y se sienta derecha"],
+  sad:["se acerca y te pone una mano en el hombro","baja la voz","deja todo lo que estaba haciendo"],
+  bored:["se tira en la cama boca arriba","se estira","busca algo para hacer con las manos"],
+  compliment:["sonríe de costado, agrandada","se toca el pelo, engrupida","se ríe y aparta la vista"],
+  question:["se queda pensando","arruga la nariz","mira para arriba como buscando la respuesta"],
+  short:["levanta la vista esperando más","se queda mirando el mensaje corto"],
+  goodbye:["se queda mirando la pantalla un rato más","levanta la mano para despedirse"],
+  generic:["asiente despacio","te mira con atención","se acomoda en la silla","juega con el pelo mientras te escucha"]
+};
+function buildAction(c,intent){
+  const sp=c.speech||{narrates:true};
+  if(sp.narrates===false) return null;
+  let action;
+  if(c.scenes&&c.scenes.length&&Math.random()<0.4) action=pick(c.scenes);
+  else { const pool=ACTIONS[intent]||ACTIONS.generic; action=pick(pool); }
+  const clean=String(action).trim().replace(/^\*|\*$/g,"");
+  const body=clean.toLowerCase().startsWith(c.name.toLowerCase())
+    ? clean : (c.name.toLowerCase()+" "+clean);
+  return "*"+body+"*";
+}
+function stripRole(content){
+  const lines=String(content).split("\n").filter(l=>l.trim().length);
+  let action=null; const rest=[];
+  for(const line of lines){
+    const tr=line.trim();
+    if(/^\*.*\*$/.test(tr)&&!action){action=tr.slice(1,-1);continue;}
+    rest.push(tr);
+  }
+  let text=rest.join(" ");
+  text=text.replace(/^[A-ZÁÉÍÓÚÑ][\wáéíóúñ.]{1,20}:\s*/,"");
+  return {action,text:text.trim()};
+}
+function applyIntensity(reply,intent,intensity){
+  if(intensity<2) return reply;
+  const boosts={love:" Y sí, te amo posta, no te lo digo de compromiso.",greeting:" Y venís con todo, me gusta.",
+    compliment:" Y vos también estás re lindo, ¿eh?",apology:" Y te acepto el perdón con todo.",
+    generic:" Se te nota que venís hablando en serio."};
+  const b=boosts[intent]||" Y me encanta cuando hablás así.";
+  return intensity===3 ? reply+b+" Posta, me dejás sin palabras." : reply+b;
+}
+function applySpeech(c,reply){
+  const sp=c.speech||{emojiLevel:2,catchphrases:[]};
+  let out=reply;
+  const EMO=/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu;
+  const count=(out.match(EMO)||[]).length;
+  if(sp.emojiLevel===0&&count) out=out.replace(EMO,"").replace(/\s+/g," ").trim();
+  else if(sp.emojiLevel>=3&&count<3) out+=" "+pick(["✨","💖","🔥"]);
+  if(sp.catchphrases&&sp.catchphrases.length&&Math.random()<0.45){
+    const cp=pick(sp.catchphrases);
+    if(!out.toLowerCase().includes(cp.toLowerCase())) out=cp+", "+out.charAt(0).toLowerCase()+out.slice(1);
+  }
+  return out;
+}
 const cap=s=>s.replace(/^(¿|¡)?([a-záéíóúñ])/,(m,p,c)=>(p||"")+c.toUpperCase()).trim();
 function clean(s){return s.replace(/\s+/g," ").replace(/\.\s*\./g,".").replace(/\?\s*\./g,"?")
   .replace(/!\s*\./g,"!").replace(/\s+([,;.!?])/g,"$1").trim();}
 
 function reply(c,userText,history){
   const it=intent(userText), st=STYLE[c.vibe]||STYLE.internacional;
+  const intensity=detectIntensity(userText);
   const t=c.traits||{celos:5,toxica:5,carino:6,humor:6,intensidad:6};
-  const pet=pick(st.pets), emo=pick(st.emojis);
+  const petsOwn=(c.speech&&c.speech.petNames&&c.speech.petNames.length)?c.speech.petNames:st.pets;
+  const pet=pick(petsOwn), emo=pick(st.emojis);
   const used=[];
   const reaction=(()=>{const r=pick(REACT[it]||REACT.generic);used.push(r);return r;})();
   const asks=["¿Y vos qué onda?","¿Vos qué harías en mi lugar?","Decime la verdad, ¿me estás jodiendo?","¿Y qué te dijo después?","¿A vos te parece normal?","¿Y ahora qué hacemos?"];
@@ -1668,7 +1841,9 @@ function reply(c,userText,history){
   else if(t.toxica>=9&&Math.random()>.72) out+=` Igual, no me hagas caso, yo estoy re bien. (No estoy re bien).`;
   out=clean(out);
   if(!/[.!?…]$/.test(out)) out+=".";
-  return out;
+  out=applySpeech(c,applyIntensity(out,it,intensity));
+  const action=buildAction(c,it);
+  return action ? action+"\n"+c.name+": "+out : c.name+": "+out;
 }
 
 /* =========================================================
@@ -1676,7 +1851,8 @@ function reply(c,userText,history){
    ========================================================= */
 const $=id=>document.getElementById(id);
 const avHTML=(c,size,extra="")=>{const[f,t]=c.accent||["#ff3d8b","#8b5cf6"];
-  return `<span class="avatar av-${size} ${extra}" style="background:linear-gradient(135deg,${f},${t})">${c.emoji||"✨"}</span>`;};
+  const inner=c.avatar?`<img src="${esc(c.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />`:(c.emoji||"✨");
+  return `<span class="avatar av-${size} ${extra}" style="background:linear-gradient(135deg,${f},${t})">${inner}</span>`;};
 const traitsBar=(lbl,v,color)=>
   `<div class="trait"><div class="row-t"><span>${lbl}</span><span>${v}/10</span></div>
    <div class="bar"><i style="width:${v*10}%;background:${color}"></i></div></div>`;
@@ -1696,7 +1872,8 @@ function cardHTML(c){
   const[f,t]=c.accent;
   return `<article class="card" onclick="openChat('${c.id}')">
     <div class="card-art" style="background:linear-gradient(135deg,${f},${t})">
-      <div class="glow"></div><div class="glyph">${c.emoji||"✨"}</div>
+      ${c.cover?`<img class="cover" src="${esc(c.cover)}" alt="" /><div class="shade"></div>`
+        :`<div class="glow"></div><div class="glyph">${c.emoji||"✨"}</div>`}
       <span class="flag-tag">${c.flag} ${esc(c.country)}</span>
       ${c.official?'<span class="oficial">OFICIAL</span>':""}
       <span class="card-cta">💬 Chatear</span>
@@ -1805,10 +1982,19 @@ function openChat(id){
   const c=findChar(id); if(!c){toast("Ese personaje no existe");return;}
   current=c;
   const ch=getChat(id); currentChatId=ch.id;
-  $("chatAv").textContent=c.emoji;
+  $("chatAv").innerHTML=c.avatar
+    ? `<img src="${esc(c.avatar)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt="" />`
+    : c.emoji;
   $("chatAv").style.background=`linear-gradient(135deg,${c.accent[0]},${c.accent[1]})`;
+
+  const bg=$("chatBg"), bgShade=$("chatBgShade");
+  if(c.cover){
+    bg.src=c.cover; bg.classList.remove("hidden"); bgShade.classList.remove("hidden");
+  }else{
+    bg.removeAttribute("src"); bg.classList.add("hidden"); bgShade.classList.add("hidden");
+  }
   $("chatName").innerHTML=`${esc(c.name)} <small style="opacity:.6">${c.flag}</small>`;
-  $("chatStatus").textContent="en línea";
+  $("chatStatus").textContent=c.role||"en línea";
   $("disclaimer").textContent=`${c.name} es un personaje ficticio. Todo lo que dice es inventado.`;
   $("panelTitle").textContent="Sobre "+c.name;
   $("panelName").textContent=c.name;
@@ -1857,6 +2043,7 @@ function renderMsgs(){
   let html=`<div class="intro">
       ${avHTML(c,112,"ring")}
       <h2>${esc(c.name)}</h2>
+      ${c.role?`<p style="color:#ff5fa2;font-weight:500;font-size:12px;margin-top:2px">${esc(c.role)}</p>`:""}
       <p>${esc(c.tagline)}</p>
       <div class="card-tags" style="justify-content:center;margin-top:9px">
         ${(c.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>
@@ -1871,7 +2058,11 @@ function renderMsgs(){
         ?`<span class="avatar av-28" style="background:linear-gradient(135deg,#8b5cf6,#ff3d8b)">${profile.emoji||"🫥"}</span>`
         :avHTML(c,28)}</div>
       <div class="bubble-wrap">
-        <div class="bubble ${me?"me":"bot"}">${esc(m.content)}</div>
+        ${(function(){
+          const rp=stripRole(m.content);
+          return (rp.action?`<div class="rp-action">*${esc(rp.action)}*</div>`:"")+
+            `<div class="bubble ${me?"me":"bot"}">${me?"":`<span class="who2">${esc(c.name)}:</span>`}${esc(rp.text)}</div>`;
+        })()}
         <div class="meta">
           <time>${time}</time>
           ${me?"":`<div class="react">
@@ -2054,7 +2245,50 @@ const PRESETS=[
 ];
 
 let form={name:"",tag:"",desc:"",greet:"",vibe:"turra",country:COUNTRIES[0],emoji:EMOJIS[0],
-  accent:ACCENTS[0],tags:"",traits:{celos:6,toxica:5,carino:6,humor:7,intensidad:7}};
+  accent:ACCENTS[0],tags:"",traits:{celos:6,toxica:5,carino:6,humor:7,intensidad:7},
+  role:"",avatar:null,cover:null,scenes:[],speech:{narrates:true,emojiLevel:2,catchphrases:[],petNames:[]}};
+
+/* --- imágenes: archivo -> dataURL comprimido --- */
+function compressImage(file,maxSize,quality){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onerror=()=>rej(new Error("No se pudo leer el archivo"));
+    r.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>rej(new Error("Ese archivo no es una imagen"));
+      img.onload=()=>{
+        const sc=Math.min(1,maxSize/Math.max(img.width,img.height));
+        const cv=document.createElement("canvas");
+        cv.width=Math.round(img.width*sc); cv.height=Math.round(img.height*sc);
+        cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+        res(cv.toDataURL("image/jpeg",quality||0.82));
+      };
+      img.src=r.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+async function loadImg(input,which){
+  const f=input.files&&input.files[0]; if(!f) return;
+  if(!f.type.startsWith("image/")){toast("Ese archivo no es una imagen");return;}
+  if(f.size>8*1024*1024){toast("Muy pesada (máx 8 MB)");return;}
+  try{
+    const data=await compressImage(f,which==="cover"?900:512,0.82);
+    form[which]=data; drawImgPreviews(); updPreview(); toast("Imagen cargada");
+  }catch(e){toast(e.message||"Falló la subida");}
+  input.value="";
+}
+function askUrl(which){
+  const v=prompt(which==="cover"?"Pegá el link de la imagen de fondo:":"Pegá el link de la foto de perfil:");
+  if(!v) return;
+  if(!/^https?:\/\//i.test(v.trim())){toast("El link tiene que empezar con http");return;}
+  form[which]=v.trim(); drawImgPreviews(); updPreview();
+}
+function drawImgPreviews(){
+  const a=document.getElementById("avPrev"), c=document.getElementById("coverPrev");
+  if(a){a.style.backgroundImage=form.avatar?`url("${form.avatar}")`:"";a.textContent=form.avatar?"":"Sin foto";a.classList.toggle("has",!!form.avatar);}
+  if(c){c.style.backgroundImage=form.cover?`url("${form.cover}")`:"";c.textContent=form.cover?"":"Sin fondo";c.classList.toggle("has",!!form.cover);}
+}
 
 function renderCreate(){
   $("presets").innerHTML=PRESETS.map((p,i)=>
@@ -2068,6 +2302,11 @@ function renderCreate(){
   $("colorPick").innerHTML=ACCENTS.map((a,i)=>
     `<button class="${form.accent[0]===a[0]?"on":""}" style="background:linear-gradient(135deg,${a[0]},${a[1]})"
        onclick="setAccent(${i})" title="Color"></button>`).join("");
+  $("emojiLvl").innerHTML=[0,1,2,3].map(n=>
+    `<button class="${form.speech.emojiLevel===n?"on":""}" style="width:30px;height:30px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid rgba(255,255,255,.1)"
+       onclick="setEmojiLvl(${n})">${n}</button>`).join("");
+  drawImgPreviews();
+  document.getElementById("cNarrates").checked = form.speech.narrates !== false;
   $("sliders").innerHTML=TRAITS.map(([k,l,col])=>
     `<div class="slider-row">
        <div class="top"><span>${l}</span><span id="sv-${k}">${form.traits[k]}/10</span></div>
@@ -2084,6 +2323,7 @@ function applyPreset(i){
   renderCreate();
 }
 function setVibe(v){form.vibe=v;renderCreate();}
+function setEmojiLvl(n){form.speech.emojiLevel=n;renderCreate();}
 function setEmoji(e){form.emoji=e;renderCreate();}
 function setAccent(i){form.accent=ACCENTS[i];renderCreate();}
 function setTrait(k,v,el){
@@ -2096,10 +2336,20 @@ function updPreview(){
   form.desc=$("cDesc").value; form.greet=$("cGreet").value;
   form.country=COUNTRIES.find(c=>c.name===$("cCountry").value)||COUNTRIES[0];
   form.tags=$("cTags").value;
+  form.role=($("cRole")||{}).value||"";
+  form.scenes=(($("cScenes")||{}).value||"").split("\n").map(x=>x.trim()).filter(Boolean);
+  form.speech.catchphrases=(($("cCatch")||{}).value||"").split(",").map(x=>x.trim()).filter(Boolean);
+  form.speech.petNames=(($("cPets")||{}).value||"").split(",").map(x=>x.trim()).filter(Boolean);
+  if($("cNarrates")) form.speech.narrates=$("cNarrates").checked;
   const pre=form;
-  $("prevAv").textContent=pre.emoji;
+  $("prevAv").innerHTML=pre.avatar
+    ? `<img src="${esc(pre.avatar)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt="" />`
+    : pre.emoji;
   $("prevAv").style.background=`linear-gradient(135deg,${pre.accent[0]},${pre.accent[1]})`;
-  $("prevArt").style.background=`linear-gradient(135deg,${pre.accent[0]},${pre.accent[1]})`;
+  $("prevArt").style.background=pre.cover
+    ? `url("${pre.cover}") center/cover`
+    : `linear-gradient(135deg,${pre.accent[0]},${pre.accent[1]})`;
+  $("prevGlyph").style.display=pre.cover?"none":"block";
   $("prevGlyph").textContent=pre.emoji;
   $("prevName").textContent=pre.name||"Tu personaje";
   $("prevLoc").textContent=`${pre.country.flag} ${pre.country.name}`;
@@ -2124,7 +2374,11 @@ function saveCharacter(){
     accent:form.accent,emoji:form.emoji,
     tags:form.tags.split(",").map(t=>t.trim()).filter(Boolean).slice(0,5),
     suggestions:["¿Cómo estás hoy?","Contame algo de vos","¿Qué hacemos el finde?","Decime la verdad"],
-    traits:{...form.traits},official:false,chats:"nuevo",createdAt:Date.now()
+    traits:{...form.traits},official:false,chats:"nuevo",createdAt:Date.now(),
+    role:form.role||undefined,avatar:form.avatar||undefined,cover:form.cover||undefined,
+    scenes:[...form.scenes],
+    speech:{narrates:form.speech.narrates!==false,emojiLevel:form.speech.emojiLevel,
+      catchphrases:[...form.speech.catchphrases],petNames:[...form.speech.petNames]}
   };
   if(!c.tags.length)c.tags=["Personalizado"];
   custom=[c,...custom]; save(K_CUSTOM,custom);
@@ -2132,7 +2386,9 @@ function saveCharacter(){
   openChat(c.id);
   location.hash="#/chat/"+c.id;
   $("cName").value="";$("cTag").value="";$("cDesc").value="";$("cGreet").value="";$("cTags").value="";
-  form={...form,name:"",tag:"",desc:"",greet:"",tags:""};
+  form={...form,name:"",tag:"",desc:"",greet:"",tags:"",role:"",avatar:null,cover:null,scenes:[],
+    speech:{narrates:true,emojiLevel:2,catchphrases:[],petNames:[]}};
+  renderCreate();
 }
 function showErr(m){const e=$("cErr");e.textContent=m;e.classList.remove("hidden");}
 

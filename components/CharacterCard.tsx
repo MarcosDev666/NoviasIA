@@ -23,10 +23,24 @@ export default function CharacterCard({
         className="relative h-36 overflow-hidden"
         style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
       >
-        <div className="absolute inset-0 opacity-40 mix-blend-overlay mesh" />
-        <div className="absolute -right-6 -bottom-8 text-[9rem] leading-none opacity-30 blur-[1px] select-none">
-          {character.emoji}
-        </div>
+        {character.cover ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={character.cover}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 opacity-40 mix-blend-overlay mesh" />
+            <div className="absolute -right-6 -bottom-8 text-[9rem] leading-none opacity-30 blur-[1px] select-none">
+              {character.emoji}
+            </div>
+          </>
+        )}
         <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-black/35 px-2 py-1 text-[11px] font-medium text-white/90 backdrop-blur">
           <span>{character.flag}</span>
           <span>{character.country}</span>

@@ -36,7 +36,16 @@ export default function Avatar({
         }}
         aria-hidden
       >
-        <span className="drop-shadow-sm">{character.emoji ?? "✨"}</span>
+        {character.avatar ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={character.avatar}
+            alt={character.name}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <span className="drop-shadow-sm">{character.emoji ?? "✨"}</span>
+        )}
       </div>
       {online && (
         <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-400 border-2 border-ink-900" />

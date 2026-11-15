@@ -14,7 +14,10 @@ gente re gila y personajes de todo el mundo.
 - 💬 **Chat funcional de verdad**: mensajes guardados, historial, "escribiendo…", delay humano
 - 🧠 **Motor de personalidades propio**: detecta intención (amor, celos, insulto, excusa, comida, plan, tristeza…) y responde según los rasgos del personaje
 - 🔌 **IA real opcional**: si configurás una API key, las respuestas las genera un LLM manteniendo el personaje (fallback automático al motor local)
-- 🎨 **Creá tu propio personaje**: nombre, personalidad, saludo, emojis, colores y 5 sliders de rasgos (celos, toxicidad, cariño, humor, intensidad) con vista previa en vivo
+- 🎬 **Motor de rol**: las respuestas vienen en formato `*acción*` + `Nombre: texto`, como en character.ai
+- 💞 **Entiende la intensidad**: "te rreee amooo!!!" recibe una respuesta mucho más efusiva que "te amo"
+- 🖼️ **Imágenes por personaje**: foto de perfil y fondo, subiendo archivo o pegando un link (se comprimen solas)
+- 🎨 **Creá tu propio personaje**: rol, personalidad, saludo, escenas, muletillas, cómo te llama, nivel de emojis, emojis, colores y 5 sliders de rasgos (celos, toxicidad, cariño, humor, intensidad) con vista previa en vivo
 - 🔍 **Explorar** con buscador + filtros por estilo
 - 📱 **Responsive** y mobile-first
 - 🗄️ **Sin base de datos ni cuentas**: todo se guarda en `localStorage`
@@ -100,9 +103,34 @@ components/             Navbar, tarjetas, avatar, chat, creador…
 lib/
   characters.ts         Los 17 personajes y sus personalidades
   persona.ts            Motor de personalidades (intents + vocabulario por personaje)
+  roleplay.ts           Formato de rol (*acciones*), intensidad emocional y parser de burbujas
   store.ts              Persistencia en localStorage
   types.ts              Tipos y estilos (vibes)
 ```
+
+## 🎬 El formato de rol
+
+Cada respuesta del personaje llega así:
+
+```
+*rocio se pone colorada y aparta la vista*
+Rocio: te amo wachin, te amo todo ❤️
+```
+
+La primera línea es la **acción** (se muestra en cursiva y gris) y la segunda el
+**diálogo** (con el nombre del personaje en negrita). En el chat se ve como en
+character.ai: la acción arriba en chiquito e itálica, la burbuja abajo.
+
+**Intensidad emocional:** el motor detecta mayúsculas, letras repetidas y signos:
+
+| Vos escribís | Detecta | Respuesta |
+|---|---|---|
+| `te amo` | normal | normal |
+| `Te rreee amo Ma,` | intensidad 1 | más efusiva |
+| `TE AMOOOO!!!` | intensidad 3 | remata con "te amo posta, me dejás sin palabras" |
+
+**Por personaje podés definir:** rol (`tu mejor amiga`), escenas propias, muletillas,
+cómo te llama, si narra acciones y cuántos emojis usa.
 
 ## 🧠 Cómo funciona el motor local
 

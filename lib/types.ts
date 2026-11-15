@@ -26,6 +26,8 @@ export type Chat = {
 export type Character = {
   id: string;
   name: string;
+  /** Rol que ocupa frente al usuario. Ej: "tu mejor amiga", "tu novia celosa" */
+  role?: string;
   tagline: string;
   description: string;
   greeting: string;
@@ -33,16 +35,34 @@ export type Character = {
   country: string;
   flag: string;
   accent: string[]; // [from, to] tailwind-safe hex
-  avatar?: string; // image path, else emoji avatar
+  /** Imagen de perfil: URL o data URL subida por el usuario */
+  avatar?: string;
+  /** Imagen de fondo de la tarjeta y del chat: URL o data URL */
+  cover?: string;
   emoji?: string;
   tags: string[];
   suggestions: string[];
   traits: Trait;
+  /** Escenas: cosas que el personaje "hace" además de hablar. Se usan para *acciones* */
+  scenes?: string[];
+  /** Cómo habla: muletillas, nivel de emojis, si narra acciones */
+  speech?: Speech;
   nsfwFilter?: boolean;
   official?: boolean;
   chats?: string;
   createdBy?: string;
   createdAt?: number;
+};
+
+export type Speech = {
+  /** Narra *acciones* entre asteriscos */
+  narrates: boolean;
+  /** Cantidad de emojis por mensaje: 0-3 */
+  emojiLevel: number;
+  /** Muletillas típicas del personaje */
+  catchphrases: string[];
+  /** Te llama así */
+  petNames: string[];
 };
 
 export type VibeId =

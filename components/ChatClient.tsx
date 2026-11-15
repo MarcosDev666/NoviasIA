@@ -17,6 +17,7 @@ import {
   Check,
 } from "lucide-react";
 import Avatar from "./Avatar";
+import RoleMessage from "./RoleMessage";
 import {
   allCharacters,
   createChat,
@@ -268,9 +269,15 @@ export default function ChatClient({ characterId }: { characterId: string }) {
               {character.name}
               <span className="text-[10px]">{character.flag}</span>
             </p>
-            <p className="truncate text-[11px] text-emerald-400">
-              {typing ? "escribiendo…" : "en línea"}
-            </p>
+            {character.role ? (
+              <p className="truncate text-[11px] text-white/45">
+                {typing ? "escribiendo…" : character.role}
+              </p>
+            ) : (
+              <p className="truncate text-[11px] text-emerald-400">
+                {typing ? "escribiendo…" : "en línea"}
+              </p>
+            )}
           </div>
         </button>
 
@@ -343,13 +350,28 @@ export default function ChatClient({ characterId }: { characterId: string }) {
 
         {/* MESSAGES */}
         <main className="relative flex min-w-0 flex-1 flex-col">
-          <div className="pointer-events-none absolute inset-0 mesh opacity-[0.35]" />
+          {character.cover ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={character.cover}
+                alt=""
+                className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.18]"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink-950/60 via-ink-950/80 to-ink-950" />
+            </>
+          ) : (
+            <div className="pointer-events-none absolute inset-0 mesh opacity-[0.35]" />
+          )}
           <div className="relative flex-1 overflow-y-auto px-3 py-6 sm:px-6">
             <div className="mx-auto flex max-w-3xl flex-col gap-1">
               {/* Card de presentación */}
               <div className="mb-6 flex flex-col items-center text-center">
                 <Avatar character={character} size="xl" ring />
                 <h2 className="mt-4 text-xl font-bold text-white">{character.name}</h2>
+                {character.role && (
+                  <p className="mt-0.5 text-xs font-medium text-hot-400">{character.role}</p>
+                )}
                 <p className="mt-1 max-w-md text-balance text-xs leading-relaxed text-white/45">
                   {character.tagline}
                 </p>
@@ -386,16 +408,13 @@ export default function ChatClient({ characterId }: { characterId: string }) {
                       )}
                     </div>
 
-                    <div className={`flex max-w-[85%] flex-col sm:max-w-[75%] ${isUser ? "items-end" : "items-start"}`}>
-                      <div
-                        className={`whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-[14.5px] leading-relaxed ${
-                          isUser
-                            ? "rounded-tr-sm bg-gradient-to-br from-hot-500 to-hot-600 text-white"
-                            : "rounded-tl-sm border border-white/[0.07] bg-ink-800/90 text-white/90"
-                        }`}
-                      >
-                        {m.content}
-                      </div>
+                    <div className="flex max-w-[85%] flex-col sm:max-w-[75%]">
+                      <RoleMessage
+                        content={m.content}
+                        character={character}
+                        me={isUser}
+                        userEmoji={profile.emoji}
+                      />
 
                       <div
                         className={`mt-1 flex items-center gap-2 opacity-0 transition group-hover:opacity-100 ${
