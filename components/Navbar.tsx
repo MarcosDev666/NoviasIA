@@ -64,6 +64,15 @@ export default function Navbar() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <a
+            href="/noviasia.html"
+            target="_blank"
+            rel="noopener"
+            className="hidden items-center gap-1.5 rounded-full border border-white/10 px-3.5 py-2 text-xs font-medium text-white/60 transition hover:bg-white/10 hover:text-white lg:flex"
+            title="Abrir la versión de un solo archivo HTML"
+          >
+            Versión HTML
+          </a>
           <Link
             href="/crear"
             className="hidden rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink-950 transition hover:bg-white/90 sm:block"

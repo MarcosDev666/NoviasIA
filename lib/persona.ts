@@ -378,10 +378,10 @@ const REACT_BANK: Record<Intent, string[]> = {
   ],
   jealousy_check: [
     "¿Yo, celosa? Para nada",
-    "Te pregunto porque me importás, no porque desconfíe",
-    "Mmm, ¿por qué lo preguntás?",
-    "No sé, ¿vos qué pensás?",
     "Celos son amor mal expresado",
+    "No sé, ¿vos qué pensás?",
+    "Ajá, mirá vos",
+    "Eso lo preguntás por algo",
   ],
   food: [
     "Ay, ni me hables de comida",

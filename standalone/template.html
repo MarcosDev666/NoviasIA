@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#07070b" />
+<title>NoviasIA — Chateá con personajes IA</title>
+<meta name="description" content="Turras, celosas, tóxicas, amigas y personajes de todo el mundo. Chats con IA que parecen de verdad." />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#07070b; --panel:#101019; --panel2:#15151f; --stroke:rgba(255,255,255,.07);
+    --ink:#f4f4f8; --muted:rgba(255,255,255,.5); --muted2:rgba(255,255,255,.33);
+    --hot:#ff3d8b; --hot2:#e42277; --grape:#8b5cf6;
+    --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  html,body{height:100%}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--font);
+    -webkit-font-smoothing:antialiased;line-height:1.5;
+  }
+  ::selection{background:rgba(255,61,139,.35)}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:99px;border:2px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-track{background:transparent}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  input,textarea,select{font:inherit;color:inherit}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 18px}
+  .hidden{display:none !important}
+
+  /* ---------- NAV ---------- */
+  header.nav{position:sticky;top:0;z-index:40;background:rgba(16,16,25,.82);
+    backdrop-filter:blur(18px);border-bottom:1px solid var(--stroke)}
+  .nav-in{display:flex;align-items:center;gap:14px;height:62px;max-width:1200px;margin:0 auto;padding:0 18px}
+  .logo{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:800;letter-spacing:-.02em}
+  .logo-mark{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--hot),var(--grape));font-size:17px;
+    box-shadow:0 8px 22px -8px rgba(255,61,139,.7)}
+  .logo b{color:var(--hot)}
+  .nav-links{display:flex;gap:3px;margin-left:10px}
+  .nav-links button{padding:7px 13px;border-radius:99px;font-size:13.5px;font-weight:500;
+    color:rgba(255,255,255,.55);transition:.15s}
+  .nav-links button:hover{background:rgba(255,255,255,.06);color:#fff}
+  .nav-links button.active{background:rgba(255,255,255,.1);color:#fff}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .btn-white{background:#fff;color:#0b0b12;font-weight:600;font-size:13px;
+    padding:9px 16px;border-radius:99px;transition:.15s}
+  .btn-white:hover{background:rgba(255,255,255,.88)}
+  .nav-user{display:flex;align-items:center;gap:7px;padding:3px 11px 3px 3px;border-radius:99px;
+    border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);transition:.15s}
+  .nav-user:hover{background:rgba(255,255,255,.1)}
+  .nav-user span.nm{font-size:11.5px;max-width:86px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    color:rgba(255,255,255,.8)}
+  .avatar{border-radius:50%;display:grid;place-items:center;flex:none;overflow:hidden;user-select:none}
+  .av-28{width:28px;height:28px;font-size:14px}
+  .av-34{width:34px;height:34px;font-size:16px}
+  .av-40{width:40px;height:40px;font-size:18px}
+  .av-56{width:56px;height:56px;font-size:26px}
+  .av-80{width:80px;height:80px;font-size:38px}
+  .av-112{width:112px;height:112px;font-size:52px;box-shadow:0 10px 34px -14px rgba(0,0,0,.9)}
+  .ring{box-shadow:0 0 0 2px rgba(255,255,255,.14)}
+  .btn-ghost{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);
+    padding:8px 14px;border-radius:99px;font-size:13px;font-weight:500;color:rgba(255,255,255,.82);transition:.15s}
+  .btn-ghost:hover{background:rgba(255,255,255,.09)}
+  .btn-grad{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--hot),var(--grape));
+    color:#fff;font-weight:600;font-size:13.5px;padding:11px 22px;border-radius:99px;
+    box-shadow:0 10px 26px -12px rgba(255,61,139,.8);transition:.15s}
+  .btn-grad:hover{opacity:.94;transform:translateY(-1px)}
+  .btn-grad:disabled{opacity:.35;transform:none;cursor:not-allowed}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--stroke)}
+  .hero::before{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(at 12% 10%,rgba(255,61,139,.18) 0,transparent 45%),
+      radial-gradient(at 85% 6%,rgba(139,92,246,.2) 0,transparent 45%),
+      radial-gradient(at 60% 90%,rgba(56,189,248,.12) 0,transparent 50%)}
+  .hero::after{content:"";position:absolute;top:-110px;left:50%;transform:translateX(-50%);
+    width:44rem;height:18rem;border-radius:50%;background:rgba(255,61,139,.14);filter:blur(110px)}
+  .hero-in{position:relative;padding:56px 18px 64px;display:grid;gap:40px;
+    grid-template-columns:1fr;max-width:1200px;margin:0 auto}
+  @media(min-width:980px){.hero-in{grid-template-columns:1.05fr .95fr;align-items:center;padding:72px 18px 80px}}
+  .pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.1);
+    background:rgba(255,255,255,.04);padding:6px 13px;border-radius:99px;font-size:12px;
+    font-weight:500;color:rgba(255,255,255,.72);margin-bottom:18px}
+  h1.hero-title{font-size:clamp(2.1rem,5.4vw,3.6rem);font-weight:800;line-height:1.05;letter-spacing:-.03em}
+  .grad-text{background:linear-gradient(90deg,#ff5fa2,#ff3d8b,#a78bfa);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero-sub{margin-top:18px;max-width:33rem;font-size:15px;line-height:1.65;color:var(--muted)}
+  .hero-cta{margin-top:26px;display:flex;flex-wrap:wrap;gap:11px}
+  .social{margin-top:28px;display:flex;align-items:center;gap:11px}
+  .av-stack{display:flex}
+  .av-stack .avatar{margin-left:-8px;box-shadow:0 0 0 2px #07070b}
+  .av-stack .avatar:first-child{margin-left:0}
+  .social p{font-size:11.5px;line-height:1.35;color:rgba(255,255,255,.42)}
+
+  /* floating chat preview */
+  .hero-cards{position:relative;height:22rem;display:none}
+  @media(min-width:980px){.hero-cards{display:block}}
+  .float-card{position:absolute;width:19rem;border-radius:16px;border:1px solid rgba(255,255,255,.1);
+    background:rgba(21,21,31,.92);backdrop-filter:blur(10px);padding:14px;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.95);animation:float 6s ease-in-out infinite}
+  .float-card.b{width:16rem;right:0;bottom:0;animation-delay:1.2s}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .fc-head{display:flex;align-items:center;gap:10px}
+  .fc-head b{font-size:13px;display:block}
+  .fc-on{font-size:11px;color:#34d399}
+  .fc-wait{font-size:11px;color:var(--muted2)}
+  .bubbles{margin-top:11px;display:flex;flex-direction:column;gap:7px}
+  .bub{max-width:88%;padding:8px 11px;font-size:12.5px;border-radius:14px;line-height:1.4}
+  .bub.bot{background:rgba(255,255,255,.07);border-top-left-radius:4px;color:rgba(255,255,255,.82)}
+  .bub.me{align-self:flex-end;background:var(--hot);border-top-right-radius:4px;color:#fff}
+  .dots{display:flex;gap:5px;margin-top:11px}
+  .dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.6);animation:dot 1.2s infinite}
+  .dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+  @keyframes dot{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-4px);opacity:1}}
+
+  /* ---------- SECTIONS ---------- */
+  section.blk{max-width:1200px;margin:0 auto;padding:44px 18px}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+  .sec-title{display:flex;align-items:center;gap:9px;font-size:19px;font-weight:700}
+  .sec-sub{font-size:13px;color:var(--muted2);margin-top:3px}
+  .search{position:relative;width:100%;max-width:310px}
+  .search input{width:100%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);
+    padding:11px 16px 11px 36px;border-radius:99px;font-size:13.5px;outline:none;transition:.15s}
+  .search input::placeholder{color:rgba(255,255,255,.3)}
+  .search input:focus{border-color:rgba(255,61,139,.6);background:rgba(255,255,255,.07)}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.4}
+
+  .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:5px;margin-bottom:20px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);
+    padding:8px 15px;border-radius:99px;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);transition:.15s}
+  .chip:hover{background:rgba(255,255,255,.1)}
+  .chip.on{background:#fff;color:#0b0b12;border-color:transparent}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:15px}
+
+  /* ---------- CARD ---------- */
+  .card{position:relative;display:flex;flex-direction:column;overflow:hidden;border-radius:16px;
+    border:1px solid var(--stroke);background:rgba(21,21,31,.8);cursor:pointer;
+    transition:transform .22s,border-color .22s,box-shadow .22s}
+  .card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.2);
+    box-shadow:0 26px 50px -26px rgba(0,0,0,.95)}
+  .card-art{position:relative;height:132px;overflow:hidden}
+  .card-art .glow{position:absolute;inset:0;
+    background:radial-gradient(at 75% 20%,rgba(255,255,255,.22) 0,transparent 55%)}
+  .card-art .glyph{position:absolute;right:-16px;bottom:-30px;font-size:8.4rem;line-height:1;opacity:.28;
+    filter:blur(.5px);user-select:none}
+  .flag-tag{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;gap:5px;
+    background:rgba(0,0,0,.38);backdrop-filter:blur(6px);padding:4px 9px;border-radius:99px;
+    font-size:11px;font-weight:500;color:rgba(255,255,255,.92)}
+  .oficial{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.38);backdrop-filter:blur(6px);
+    padding:4px 8px;border-radius:99px;font-size:9.5px;font-weight:700;letter-spacing:.06em;
+    color:rgba(255,255,255,.92)}
+  .card-cta{position:absolute;bottom:10px;left:10px;background:#fff;color:#0b0b12;font-size:11.5px;
+    font-weight:600;padding:6px 11px;border-radius:99px;opacity:0;transform:translateY(6px);transition:.22s}
+  .card:hover .card-cta{opacity:1;transform:translateY(0)}
+  .card-body{padding:14px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .card-name{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .card-count{font-size:11px;color:var(--muted2);flex:none}
+  .card-desc{font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.5);display:-webkit-box;
+    -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card-tags{margin-top:auto;display:flex;flex-wrap:wrap;gap:5px;padding-top:5px}
+  .tag{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);
+    padding:2px 8px;border-radius:99px;font-size:10.5px;color:rgba(255,255,255,.6)}
+  .card-create{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    min-height:15rem;border:1px dashed rgba(255,255,255,.16);border-radius:16px;
+    background:rgba(255,255,255,.02);text-align:center;padding:22px;transition:.2s}
+  .card-create:hover{border-color:rgba(255,61,139,.5);background:rgba(255,255,255,.05)}
+  .plus{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:22px;
+    background:linear-gradient(135deg,var(--hot),var(--grape))}
+
+  .empty{border:1px dashed rgba(255,255,255,.12);border-radius:16px;padding:60px 20px;text-align:center}
+  .empty .big{font-size:36px}
+  .empty p{font-size:13.5px;color:var(--muted);margin-top:12px}
+
+  .banner{position:relative;overflow:hidden;border-radius:22px;border:1px solid rgba(255,255,255,.1);
+    background:linear-gradient(120deg,rgba(255,61,139,.2),rgba(139,92,246,.1),transparent);
+    padding:38px 26px}
+  .banner h2{font-size:clamp(1.3rem,3vw,1.75rem);font-weight:700;max-width:32rem}
+  .banner p{margin-top:10px;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.6);max-width:30rem}
+  .banner .glyph{position:absolute;right:-24px;top:-30px;font-size:12rem;opacity:.09;user-select:none}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--stroke);background:rgba(16,16,25,.6);margin-top:64px}
+  .foot{max-width:1200px;margin:0 auto;padding:38px 18px}
+  .foot-grid{display:flex;flex-direction:column;gap:30px}
+  @media(min-width:760px){.foot-grid{flex-direction:row;justify-content:space-between}}
+  .foot-brand{max-width:22rem}
+  .foot-brand p{margin-top:10px;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.42)}
+  .foot-cols{display:grid;grid-template-columns:repeat(2,1fr);gap:34px}
+  @media(min-width:520px){.foot-cols{grid-template-columns:repeat(3,1fr)}}
+  .foot-cols h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;
+    color:rgba(255,255,255,.38);margin-bottom:11px;font-weight:600}
+  .foot-cols a{display:block;font-size:12.5px;color:rgba(255,255,255,.55);padding:3px 0}
+  .foot-cols a:hover{color:#fff}
+  .foot-bottom{margin-top:34px;padding-top:20px;border-top:1px solid var(--stroke);
+    display:flex;flex-direction:column;gap:6px;font-size:11px;color:rgba(255,255,255,.32)}
+  @media(min-width:640px){.foot-bottom{flex-direction:row;justify-content:space-between}}
+
+  /* ---------- CHAT ---------- */
+  .chat-view{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;background:var(--bg)}
+  .chat-head{display:flex;align-items:center;gap:11px;height:62px;flex:none;padding:0 12px;
+    border-bottom:1px solid var(--stroke);background:rgba(16,16,25,.85);backdrop-filter:blur(14px);z-index:20}
+  .icon-btn{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;
+    color:rgba(255,255,255,.58);transition:.15s;flex:none}
+  .icon-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+  .chat-id{display:flex;align-items:center;gap:11px;text-align:left;min-width:0}
+  .chat-id b{display:flex;align-items:center;gap:5px;font-size:13.5px;font-weight:600;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chat-id .st{font-size:11px;color:#34d399}
+  .engine-tag{font-size:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+    padding:5px 10px;border-radius:99px;color:rgba(255,255,255,.4)}
+  .chat-body{flex:1;min-height:0;display:flex}
+  .chat-side{display:none;width:248px;flex:none;border-right:1px solid var(--stroke);
+    background:rgba(16,16,25,.4);flex-direction:column}
+  @media(min-width:1024px){.chat-side{display:flex}}
+  .side-head{display:flex;align-items:center;justify-content:space-between;padding:11px 15px}
+  .side-head span{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35)}
+  .side-list{flex:1;overflow-y:auto;padding:0 7px 14px}
+  .side-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:11px;transition:.15s;width:100%;text-align:left}
+  .side-item:hover{background:rgba(255,255,255,.06)}
+  .side-item .t{min-width:0;flex:1}
+  .side-item b{display:block;font-size:12.5px;font-weight:500;color:rgba(255,255,255,.85);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .side-item small{display:block;font-size:10.5px;color:rgba(255,255,255,.33);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .chat-main{position:relative;flex:1;min-width:0;display:flex;flex-direction:column}
+  .chat-main::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.32;
+    background:
+      radial-gradient(at 12% 10%,rgba(255,61,139,.18) 0,transparent 45%),
+      radial-gradient(at 85% 6%,rgba(139,92,246,.2) 0,transparent 45%),
+      radial-gradient(at 60% 90%,rgba(56,189,248,.12) 0,transparent 50%)}
+  .msgs{position:relative;flex:1;overflow-y:auto;padding:22px 12px}
+  @media(min-width:640px){.msgs{padding:24px}}
+  .msgs-in{max-width:720px;margin:0 auto}
+  .intro{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:26px}
+  .intro h2{font-size:19px;font-weight:700;margin-top:15px}
+  .intro p{font-size:12px;line-height:1.55;color:rgba(255,255,255,.45);max-width:26rem;margin-top:5px}
+  .intro .tag{margin-top:9px}
+  .row{display:flex;gap:9px;margin-top:16px;animation:fadeUp .35s cubic-bezier(.22,1,.36,1) both}
+  .row.grp{margin-top:3px}
+  .row.me{flex-direction:row-reverse}
+  .row .who{width:32px;flex:none}
+  .row.grp .who{opacity:0}
+  .bubble-wrap{display:flex;flex-direction:column;max-width:82%}
+  @media(min-width:640px){.bubble-wrap{max-width:76%}}
+  .row.me .bubble-wrap{align-items:flex-end}
+  .bubble{padding:10px 14px;font-size:14.3px;line-height:1.55;border-radius:16px;
+    white-space:pre-wrap;overflow-wrap:break-word}
+  .bubble.bot{background:rgba(21,21,31,.92);border:1px solid var(--stroke);border-top-left-radius:5px;
+    color:rgba(255,255,255,.9)}
+  .bubble.me{background:linear-gradient(135deg,var(--hot),var(--hot2));color:#fff;border-top-right-radius:5px}
+  .meta{display:flex;align-items:center;gap:7px;margin-top:4px;opacity:0;transition:.15s}
+  .row:hover .meta{opacity:1}
+  .row.me .meta{flex-direction:row-reverse}
+  .meta time{font-size:10px;color:rgba(255,255,255,.25)}
+  .react{display:flex;gap:2px}
+  .react button{font-size:12px;padding:1px 3px;border-radius:99px;transition:.12s}
+  .react button:hover{transform:scale(1.25)}
+  .react button.on{background:rgba(255,255,255,.12)}
+  @keyframes fadeUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+  .typing{display:flex;gap:9px;align-items:flex-end;margin-top:16px}
+  .typing .bub-box{background:rgba(21,21,31,.92);border:1px solid var(--stroke);border-radius:16px;
+    border-top-left-radius:5px;padding:13px 16px;display:flex;gap:5px}
+  .typing .bub-box i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.7);animation:dot 1.2s infinite}
+  .typing .bub-box i:nth-child(2){animation-delay:.15s}
+  .typing .bub-box i:nth-child(3){animation-delay:.3s}
+
+  .composer{position:relative;flex:none;border-top:1px solid var(--stroke);
+    background:rgba(16,16,25,.85);backdrop-filter:blur(14px);padding:9px 8px 12px}
+  @media(min-width:640px){.composer{padding:9px 22px 15px}}
+  .composer-in{max-width:720px;margin:0 auto}
+  .sugs{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+  .sugs::-webkit-scrollbar{display:none}
+  .sug{flex:none;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);
+    padding:7px 12px;border-radius:99px;font-size:12px;color:rgba(255,255,255,.7);transition:.15s}
+  .sug:hover{border-color:rgba(255,61,139,.5);background:rgba(255,255,255,.1);color:#fff}
+  .composer-box{display:flex;align-items:flex-end;gap:8px;border:1px solid rgba(255,255,255,.1);
+    background:rgba(21,21,31,.92);border-radius:22px;padding:6px 6px 6px 14px;transition:border-color .15s}
+  .composer-box:focus-within{border-color:rgba(255,61,139,.5)}
+  .composer-box textarea{flex:1;background:none;border:none;outline:none;resize:none;
+    max-height:120px;min-height:24px;padding:9px 0;font-size:14px;color:#fff}
+  .composer-box textarea::placeholder{color:rgba(255,255,255,.3)}
+  .send{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--hot),var(--grape));color:#fff;transition:.15s}
+  .send:disabled{opacity:.35;cursor:not-allowed}
+  .disclaimer{text-align:center;font-size:10px;color:rgba(255,255,255,.25);margin-top:7px}
+
+  /* ---------- PANEL ---------- */
+  .overlay{position:fixed;inset:0;z-index:60;display:flex;justify-content:flex-end}
+  .overlay-bg{position:absolute;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);animation:fadeIn .25s both}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .panel{position:relative;width:100%;max-width:380px;height:100%;overflow-y:auto;
+    background:var(--panel);border-left:1px solid rgba(255,255,255,.1);animation:slideIn .3s cubic-bezier(.22,1,.36,1) both}
+  @keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;
+    padding:13px 16px;border-bottom:1px solid var(--stroke)}
+  .panel-head b{font-size:13.5px}
+  .panel-sec{padding:18px 20px;border-top:1px solid var(--stroke)}
+  .panel-sec:first-of-type{border-top:none}
+  .panel-sec > .lbl{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+    color:rgba(255,255,255,.35);margin-bottom:12px}
+  .panel-intro{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 20px}
+  .panel-intro h3{font-size:17px;font-weight:700;margin-top:15px}
+  .panel-intro .loc{font-size:11.5px;color:rgba(255,255,255,.4);margin-top:2px}
+  .panel-intro p{font-size:12.8px;line-height:1.65;color:rgba(255,255,255,.6);margin-top:15px}
+  .trait{margin-bottom:11px}
+  .trait .row-t{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
+  .trait .row-t span:first-child{color:rgba(255,255,255,.5)}
+  .trait .row-t span:last-child{color:rgba(255,255,255,.72);font-weight:600}
+  .bar{height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:99px;transition:width .4s}
+  .panel-btn{display:flex;align-items:center;gap:9px;width:100%;padding:11px 13px;border-radius:12px;
+    border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);font-size:13px;
+    color:rgba(255,255,255,.8);margin-bottom:8px;transition:.15s}
+  .panel-btn:hover{background:rgba(255,255,255,.07)}
+  .panel-btn.danger{border-color:rgba(239,68,68,.22);background:rgba(239,68,68,.1);color:#fca5a5}
+  .panel-btn.danger:hover{background:rgba(239,68,68,.2)}
+  .panel-note{padding:16px 20px;font-size:10px;line-height:1.7;color:rgba(255,255,255,.25);
+    border-top:1px solid var(--stroke)}
+
+  /* ---------- CREATE ---------- */
+  .page{max-width:1200px;margin:0 auto;padding:26px 18px 60px}
+  .back{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);margin-bottom:22px}
+  .back:hover{color:#fff}
+  .page h1{display:flex;align-items:center;gap:10px;font-size:clamp(1.4rem,3.4vw,1.9rem);font-weight:700}
+  .page .lead{margin-top:8px;font-size:13.5px;color:var(--muted);max-width:34rem;line-height:1.6}
+  .create-grid{display:grid;gap:30px;margin-top:30px;grid-template-columns:1fr}
+  @media(min-width:960px){.create-grid{grid-template-columns:1fr 320px;align-items:start}}
+  .form-box{border:1px solid var(--stroke);background:rgba(21,21,31,.62);border-radius:16px;padding:18px;margin-bottom:16px}
+  .form-box > .lbl{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+    color:rgba(255,255,255,.38);margin-bottom:13px}
+  .field{margin-bottom:15px}
+  .field:last-child{margin-bottom:0}
+  .field > span{display:flex;align-items:baseline;gap:7px;margin-bottom:6px}
+  .field label{font-size:13px;font-weight:500;color:rgba(255,255,255,.8);cursor:pointer}
+  .field em{font-size:11px;font-style:normal;color:rgba(255,255,255,.3)}
+  .inp{width:100%;border:1px solid rgba(255,255,255,.1);background:rgba(11,11,18,.7);
+    padding:10px 13px;border-radius:11px;font-size:13.5px;outline:none;transition:.15s}
+  .inp::placeholder{color:rgba(255,255,255,.26)}
+  .inp:focus{border-color:rgba(255,61,139,.6)}
+  textarea.inp{resize:vertical;line-height:1.55}
+  .two{display:grid;gap:15px;grid-template-columns:1fr}
+  @media(min-width:560px){.two{grid-template-columns:1fr 1fr}}
+  .pick{display:flex;flex-wrap:wrap;gap:6px}
+  .pick button{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+    border-radius:9px;transition:.15s}
+  .pick.emoji button{width:36px;height:36px;display:grid;place-items:center;font-size:17px}
+  .pick.emoji button.on{border-color:var(--hot);background:rgba(255,61,139,.2)}
+  .pick.color button{width:36px;height:36px;border-radius:9px;border:2px solid transparent}
+  .pick.color button.on{border-color:#fff;transform:scale(1.06)}
+  .pick.vibe button{padding:7px 13px;border-radius:99px;font-size:12px;font-weight:500;
+    color:rgba(255,255,255,.6)}
+  .pick.vibe button.on{background:#fff;color:#0b0b12;border-color:transparent}
+  .preset-row{display:flex;flex-wrap:wrap;gap:7px}
+  .preset{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);
+    padding:7px 13px;border-radius:99px;font-size:12px;color:rgba(255,255,255,.7);transition:.15s}
+  .preset:hover{border-color:rgba(255,61,139,.5);background:rgba(255,255,255,.1);color:#fff}
+  .slider-row{margin-bottom:15px}
+  .slider-row:last-child{margin-bottom:0}
+  .slider-row .top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+  .slider-row .top span:first-child{color:rgba(255,255,255,.65)}
+  .slider-row .top span:last-child{color:rgba(255,255,255,.8);font-weight:600}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;
+    background:#2a2a3a;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+    background:var(--hot);border:2px solid var(--panel);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--hot);
+    border:2px solid var(--panel);cursor:pointer}
+  .err{border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.1);color:#fca5a5;
+    padding:11px 14px;border-radius:11px;font-size:13px;margin-bottom:14px}
+  .preview{border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;
+    background:rgba(21,21,31,.9)}
+  @media(min-width:960px){.preview{position:sticky;top:80px}}
+  .prev-art{height:100px;position:relative}
+  .prev-art .glow{position:absolute;inset:0;background:radial-gradient(at 75% 20%,rgba(255,255,255,.22) 0,transparent 55%)}
+  .prev-art .glyph{position:absolute;right:-10px;bottom:-22px;font-size:6rem;opacity:.3;user-select:none}
+  .prev-body{padding:0 20px 20px;margin-top:-32px}
+  .prev-body h3{font-size:17px;font-weight:700;margin-top:11px}
+  .prev-body .loc{font-size:11.5px;color:rgba(255,255,255,.45)}
+  .prev-body .desc{font-size:12.8px;line-height:1.55;color:rgba(255,255,255,.6);margin-top:8px}
+  .prev-bubble{margin-top:15px;background:var(--panel2);border:1px solid var(--stroke);
+    border-radius:16px;border-top-left-radius:5px;padding:9px 13px;font-size:12.5px;line-height:1.5;
+    color:rgba(255,255,255,.8)}
+  .prev-traits{margin-top:15px;padding-top:15px;border-top:1px solid var(--stroke)}
+  .prev-traits .tr{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.4)}
+  .prev-traits .b{height:4px;border-radius:99px;background:rgba(255,255,255,.1);margin:3px 0 7px;overflow:hidden}
+  .prev-traits .b i{display:block;height:100%;border-radius:99px}
+  .hint{font-size:11px;line-height:1.6;color:rgba(255,255,255,.3);margin-top:12px}
+
+  /* ---------- LISTA CHATS / PERFIL ---------- */
+  .narrow{max-width:840px;margin:0 auto;padding:30px 18px 60px}
+  .chat-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;
+    border:1px solid var(--stroke);background:rgba(21,21,31,.7);margin-bottom:8px;transition:.15s}
+  .chat-row:hover{border-color:rgba(255,255,255,.2);background:var(--panel2)}
+  .chat-row .txt{min-width:0;flex:1;cursor:pointer}
+  .chat-row .nm{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600}
+  .chat-row .nm small{font-size:10.5px;color:rgba(255,255,255,.3);font-weight:400}
+  .chat-row .last{margin-top:2px;font-size:12.5px;color:rgba(255,255,255,.45);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .del{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;
+    color:rgba(255,255,255,.3);transition:.15s}
+  .del:hover{background:rgba(239,68,68,.15);color:#f87171}
+  .stat-grid{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-top:22px}
+  .stat{border:1px solid var(--stroke);background:rgba(21,21,31,.6);border-radius:14px;padding:15px}
+  .stat .k{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35)}
+  .stat .v{font-size:20px;font-weight:700;margin-top:6px}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:#fff;color:#0b0b12;font-size:13px;font-weight:600;padding:11px 20px;border-radius:99px;
+    box-shadow:0 20px 40px -14px rgba(0,0,0,.8);opacity:0;pointer-events:none;transition:.28s;z-index:99}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="logo" href="#/" onclick="go('home');return false">
+      <span class="logo-mark">🔥</span>
+      <span>Novias<b>IA</b></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <button data-nav="home" onclick="go('home')">Descubrir</button>
+      <button data-nav="chats" onclick="go('chats')">Mis chats</button>
+      <button data-nav="crear" onclick="go('crear')">Crear</button>
+    </nav>
+    <div class="nav-right">
+      <button class="btn-white" onclick="go('crear')" style="display:none" id="navCta">Crear personaje</button>
+      <button class="nav-user" onclick="go('perfil')">
+        <span class="avatar av-28" id="navAv">🫥</span>
+        <span class="nm" id="navName">Invitado</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HOME ================= -->
+<div id="view-home">
+  <section class="hero">
+    <div class="hero-in">
+      <div>
+        <div class="pill">✨ <span id="heroCount">16</span> personajes · chats ilimitados</div>
+        <h1 class="hero-title">Chateá con quien<br><span class="grad-text">quieras, cuando quieras</span></h1>
+        <p class="hero-sub">
+          Turras del conurbano, novias celosas, amigas del alma, gente re gila y
+          personajes de todo el mundo. Elegí uno y empezá a hablar. Todos opinan de tu
+          vida, para bien o para mal.
+        </p>
+        <div class="hero-cta">
+          <button class="btn-grad" onclick="randomChat()">🔀 Hablar con alguien random</button>
+          <button class="btn-ghost" onclick="go('crear')">Crear mi personaje</button>
+        </div>
+        <div class="social">
+          <div class="av-stack" id="avStack"></div>
+          <p>Miles de chats abiertos ahora mismo<br><span style="color:rgba(255,255,255,.28)">(y todos con drama)</span></p>
+        </div>
+      </div>
+      <div class="hero-cards">
+        <div class="float-card">
+          <div class="fc-head">
+            <span class="avatar av-34" id="fcAv1">💅</span>
+            <span><b id="fcName1">Mili</b><span class="fc-on">en línea ahora</span></span>
+          </div>
+          <div class="bubbles">
+            <div class="bub bot">Uy, mirá quién apareció 😏 ¿me tenés abandonada?</div>
+            <div class="bub me">Perdón, estaba laburando</div>
+            <div class="bub bot">¿Laburando? A las 2 AM, sí, seguro 💀</div>
+          </div>
+        </div>
+        <div class="float-card b">
+          <div class="fc-head">
+            <span class="avatar av-34" id="fcAv2">🔪</span>
+            <span><b id="fcName2">Rochi</b><span class="fc-wait">escribiendo…</span></span>
+          </div>
+          <div class="dots"><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="sec-head">
+      <div>
+        <h2 class="sec-title">📈 Tendencias de hoy</h2>
+        <p class="sec-sub">Los que están rompiendo el algoritmo</p>
+      </div>
+    </div>
+    <div class="grid" id="trendGrid"></div>
+  </section>
+
+  <section class="blk" style="padding-top:8px">
+    <div class="sec-head">
+      <div>
+        <h2 class="sec-title">🔥 Explorar personajes</h2>
+        <p class="sec-sub" id="countLbl">16 personajes para elegir</p>
+      </div>
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" type="search" placeholder="Buscar por nombre, país, estilo…" oninput="renderList()" />
+      </div>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="allGrid"></div>
+    <div class="empty hidden" id="emptyState">
+      <div class="big">🕵️</div>
+      <p>No encontramos a nadie con eso. Probá con otra cosa.</p>
+      <button class="btn-ghost" style="margin-top:14px" onclick="clearFilters()">Limpiar filtros</button>
+    </div>
+  </section>
+
+  <section class="blk" style="padding-top:0">
+    <div class="banner">
+      <div class="glyph">💅</div>
+      <h2>¿Nadie te entiende? Inventá a quién sí.</h2>
+      <p>Creá un personaje con su propia personalidad, sus celos, su toxicidad y su forma
+         de hablar. En 2 minutos ya está listo para pelearse con vos.</p>
+      <button class="btn-white" style="margin-top:20px" onclick="go('crear')">Crear personaje →</button>
+    </div>
+  </section>
+</div>
+
+<!-- ================= CHATS ================= -->
+<div id="view-chats" class="hidden">
+  <div class="narrow">
+    <div class="sec-head">
+      <div>
+        <h1 class="sec-title" style="font-size:22px">💬 Mis chats</h1>
+        <p class="sec-sub" id="chatsCount">Todavía no hablaste con nadie</p>
+      </div>
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="qChats" type="search" placeholder="Buscar en tus chats…" oninput="renderChats()" />
+      </div>
+    </div>
+    <div id="chatsList"></div>
+    <div class="empty hidden" id="chatsEmpty">
+      <div class="big">💬</div>
+      <p>Acá van a aparecer tus conversaciones. Empezá con alguien.</p>
+      <button class="btn-grad" style="margin-top:16px" onclick="go('home')">Descubrir personajes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CREAR ================= -->
+<div id="view-crear" class="hidden">
+  <div class="page">
+    <button class="back" onclick="go('home')">← Volver</button>
+    <h1>✨ Creá tu personaje</h1>
+    <p class="lead">Inventate a quien quieras: una turra, una celosa, una amiga insoportable.
+       Vos definís su personalidad y cómo te habla.</p>
+
+    <div class="create-grid">
+      <div>
+        <div class="form-box">
+          <p class="lbl">🪄 Empezar con una plantilla</p>
+          <div class="preset-row" id="presets"></div>
+        </div>
+
+        <div class="form-box">
+          <div class="field">
+            <span><label for="cName">Nombre</label><em>Cómo se llama</em></span>
+            <input class="inp" id="cName" maxlength="24" placeholder="Ej: Mili, Rochi, Chiara…" oninput="updPreview()" />
+          </div>
+          <div class="field">
+            <span><label for="cTag">Frase corta</label><em>Una línea que la describa</em></span>
+            <input class="inp" id="cTag" maxlength="80" placeholder="Ej: La turra del barrio que te ama y te bardea" oninput="updPreview()" />
+          </div>
+          <div class="field">
+            <span><label for="cDesc">Personalidad</label><em>Contá cómo es, qué le gusta, qué odia</em></span>
+            <textarea class="inp" id="cDesc" rows="4" maxlength="900" oninput="updPreview()"
+              placeholder="Vive en La Matanza, tiene las uñas largas, le encanta el reggaetón y se enoja si no le contestás…"></textarea>
+          </div>
+          <div class="field">
+            <span><label for="cGreet">Primer mensaje</label><em>Lo primero que te va a decir</em></span>
+            <textarea class="inp" id="cGreet" rows="3" maxlength="500" oninput="updPreview()"
+              placeholder="Uy, mirá quién apareció 😏 ¿Me tenés abandonada?"></textarea>
+          </div>
+          <div class="two">
+            <div class="field">
+              <span><label for="cCountry">País</label></span>
+              <select class="inp" id="cCountry" onchange="updPreview()"></select>
+            </div>
+            <div class="field">
+              <span><label for="cTags">Etiquetas</label><em>Separadas por coma</em></span>
+              <input class="inp" id="cTags" placeholder="Turra, Celosa, Divertida" oninput="updPreview()" />
+            </div>
+          </div>
+          <div class="field">
+            <span><label>Estilo</label></span>
+            <div class="pick vibe" id="vibePick"></div>
+          </div>
+          <div class="two" style="margin-top:15px">
+            <div class="field">
+              <span><label>Emoji / avatar</label></span>
+              <div class="pick emoji" id="emojiPick"></div>
+            </div>
+            <div class="field">
+              <span><label>Colores</label></span>
+              <div class="pick color" id="colorPick"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-box">
+          <p class="lbl">🎚️ Rasgos de personalidad</p>
+          <div id="sliders"></div>
+        </div>
+
+        <div class="err hidden" id="cErr"></div>
+        <button class="btn-grad" onclick="saveCharacter()">💾 Crear y chatear</button>
+      </div>
+
+      <aside>
+        <p class="lbl" style="font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.4);margin-bottom:11px">👁 Vista previa</p>
+        <div class="preview">
+          <div class="prev-art" id="prevArt"><div class="glow"></div><div class="glyph" id="prevGlyph">💅</div></div>
+          <div class="prev-body">
+            <span class="avatar av-80 ring" id="prevAv">💅</span>
+            <h3 id="prevName">Tu personaje</h3>
+            <p class="loc" id="prevLoc">🇦🇷 Argentina</p>
+            <p class="desc" id="prevDesc">Una personita con actitud</p>
+            <div class="prev-bubble" id="prevGreet">Hola… ¿y vos quién sos? Contame algo interesante o me aburro 😏</div>
+            <div class="prev-traits" id="prevTraits"></div>
+          </div>
+        </div>
+        <p class="hint">Tu personaje se guarda en este navegador. Nadie más lo ve.</p>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PERFIL ================= -->
+<div id="view-perfil" class="hidden">
+  <div class="narrow">
+    <h1 class="sec-title" style="font-size:22px">👤 Mi perfil</h1>
+    <p class="sec-sub">Todo se guarda en tu navegador. Sin cuentas, sin contraseñas.</p>
+
+    <div class="form-box" style="margin-top:22px">
+      <div style="display:flex;align-items:center;gap:15px">
+        <span class="avatar av-56" id="profAv">🫥</span>
+        <div style="flex:1">
+          <label style="font-size:11px;color:rgba(255,255,255,.5)">Tu nombre</label>
+          <input class="inp" id="profName" maxlength="20" placeholder="¿Cómo te llamás?" oninput="updProfile()" />
+        </div>
+      </div>
+      <div style="margin-top:17px">
+        <p style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:8px">Tu avatar</p>
+        <div class="pick emoji" id="profEmojis"></div>
+      </div>
+    </div>
+
+    <div class="stat-grid" id="statGrid"></div>
+
+    <div class="form-box" style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div>
+          <b style="font-size:13.5px">Mis personajes</b>
+          <p style="font-size:11.5px;color:rgba(255,255,255,.4)">Los que creaste vos</p>
+        </div>
+        <button class="btn-ghost" onclick="go('crear')">+ Crear</button>
+      </div>
+      <div id="myChars"></div>
+    </div>
+
+    <div class="form-box" style="border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.06)">
+      <b style="font-size:13.5px">Zona peligrosa</b>
+      <p style="font-size:11.5px;color:rgba(255,255,255,.45);margin-top:4px">
+        Borra todas tus conversaciones de este navegador.</p>
+      <button class="panel-btn danger" style="width:auto;margin-top:12px;display:inline-flex"
+              onclick="clearAllChats()">🗑 Borrar todos los chats</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CHAT ================= -->
+<div id="view-chat" class="chat-view hidden">
+  <header class="chat-head">
+    <button class="icon-btn" onclick="go('home')" title="Volver">←</button>
+    <button class="chat-id" onclick="openPanel()">
+      <span class="avatar av-40" id="chatAv">💅</span>
+      <span style="min-width:0">
+        <b id="chatName">Mili <small style="opacity:.6" id="chatFlag">🇦🇷</small></b>
+        <span class="st" id="chatStatus">en línea</span>
+      </span>
+    </button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:3px">
+      <span class="engine-tag" id="engineTag">motor local</span>
+      <button class="icon-btn" onclick="copyLink()" title="Compartir">🔗</button>
+      <button class="icon-btn" onclick="resetChat()" title="Reiniciar">↻</button>
+      <button class="icon-btn" onclick="openPanel()" title="Info">⋯</button>
+    </div>
+  </header>
+
+  <div class="chat-body">
+    <aside class="chat-side">
+      <div class="side-head"><span>Mis chats</span></div>
+      <div class="side-list" id="sideList"></div>
+    </aside>
+    <main class="chat-main">
+      <div class="msgs" id="msgs"><div class="msgs-in" id="msgsIn"></div></div>
+      <div class="composer">
+        <div class="composer-in">
+          <div class="sugs" id="sugs"></div>
+          <div class="composer-box">
+            <textarea id="input" rows="1" placeholder="Escribile…"></textarea>
+            <button class="send" id="sendBtn" onclick="send()" title="Enviar">➤</button>
+          </div>
+          <p class="disclaimer" id="disclaimer">Este personaje es ficción. Todo lo que dice es inventado.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ================= PANEL INFO ================= -->
+<div id="panel" class="overlay hidden">
+  <div class="overlay-bg" onclick="closePanel()"></div>
+  <aside class="panel">
+    <div class="panel-head">
+      <b id="panelTitle">Sobre</b>
+      <button class="icon-btn" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-intro">
+      <span class="avatar av-112 ring" id="panelAv">💅</span>
+      <h3 id="panelName">Mili</h3>
+      <p class="loc" id="panelLoc">🇦🇷 Argentina · 2.4M chats</p>
+      <p id="panelDesc"></p>
+    </div>
+    <div class="panel-sec">
+      <p class="lbl">Personalidad</p>
+      <div id="panelTraits"></div>
+    </div>
+    <div class="panel-sec">
+      <p class="lbl">Acciones</p>
+      <button class="panel-btn" onclick="resetChat()">↻ Reiniciar conversación</button>
+      <button class="panel-btn" onclick="copyLink()">🔗 Compartir este personaje</button>
+      <button class="panel-btn danger" onclick="deleteChat()">🗑 Borrar este chat</button>
+    </div>
+    <div class="panel-note">
+      Este personaje es ficción generada por IA. No representa a ninguna persona real.
+      Si algo te hace mal, cerrá la app y hablá con alguien de verdad. 💙
+    </div>
+  </aside>
+</div>
+
+<footer id="foot">
+  <div class="foot">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo"><span class="logo-mark">🔥</span><span>Novias<b>IA</b></span></div>
+        <p>Chats con personajes que parecen de verdad. Turras, celosas, tóxicas, amigas y
+           gente de todo el mundo. Todo inventado, nada real.</p>
+      </div>
+      <div class="foot-cols">
+        <div>
+          <h4>Explorar</h4>
+          <a href="#/" onclick="go('home');return false">Descubrir</a>
+          <a href="#/" onclick="go('chats');return false">Mis chats</a>
+          <a href="#/" onclick="go('crear');return false">Crear personaje</a>
+        </div>
+        <div>
+          <h4>Estilos</h4>
+          <a href="#/" onclick="filterVibe('turra');return false">Turras</a>
+          <a href="#/" onclick="filterVibe('celosa');return false">Celosas</a>
+          <a href="#/" onclick="filterVibe('toxica');return false">Tóxicas</a>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <a href="#/" onclick="alert('Todos los personajes son ficción.\n\nTus chats se guardan solo en este navegador (localStorage). No hay cuentas ni base de datos.\n\nEsto es entretenimiento, no reemplaza a un profesional. Si estás mal, hablá con alguien real.');return false">Términos</a>
+          <a href="#/" onclick="alert('Privacidad:\n\nTodo se guarda en tu navegador. Nada se sube a ningún servidor en esta versión offline.');return false">Privacidad</a>
+          <a href="#/" onclick="go('perfil');return false">Mi perfil</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© <span id="yr"></span> NoviasIA. Todos los personajes son ficción.</p>
+      <p>Hecho con 🧉 en Argentina</p>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   DATOS
+   ========================================================= */
+const CHARACTERS = /*__CHARACTERS__*/[];
+const VIBES = [
+  {id:"turra",label:"Turras",emoji:"💅"},
+  {id:"celosa",label:"Celosas",emoji:"🔪"},
+  {id:"toxica",label:"Tóxicas",emoji:"☢️"},
+  {id:"amiga",label:"Amigues",emoji:"🫂"},
+  {id:"regila",label:"Re gilas",emoji:"🙈"},
+  {id:"romantica",label:"Románticas",emoji:"🌹"},
+  {id:"caotica",label:"Caóticas",emoji:"🎢"},
+  {id:"internacional",label:"Del mundo",emoji:"🌎"}
+];
+const COUNTRIES = [
+  {name:"Argentina",flag:"🇦🇷"},{name:"Uruguay",flag:"🇺🇾"},{name:"Chile",flag:"🇨🇱"},
+  {name:"Brasil",flag:"🇧🇷"},{name:"México",flag:"🇲🇽"},{name:"Colombia",flag:"🇨🇴"},
+  {name:"España",flag:"🇪🇸"},{name:"Cuba",flag:"🇨🇺"},{name:"Perú",flag:"🇵🇪"},
+  {name:"Venezuela",flag:"🇻🇪"},{name:"Estados Unidos",flag:"🇺🇸"},{name:"Serbia",flag:"🇷🇸"},
+  {name:"Alemania",flag:"🇩🇪"},{name:"Italia",flag:"🇮🇹"},{name:"Japón",flag:"🇯🇵"},{name:"Otro",flag:"🌎"}
+];
+const EMOJIS = ["💅","🔪","☢️","🫂","🙈","🌹","🎢","🌻","🌊","🌵","🍷","🌙","☕","🚲","🔥","🩹","🎧","🌎"];
+const ACCENTS = [["#ff3d8b","#8b5cf6"],["#e42277","#f97316"],["#f43f5e","#7c3aed"],
+  ["#22c55e","#06b6d4"],["#eab308","#ec4899"],["#f472b6","#a78bfa"],["#f97316","#ef4444"],
+  ["#84cc16","#14b8a6"],["#16a34a","#facc15"],["#6366f1","#0ea5e9"],["#f59e0b","#1f2937"],
+  ["#a855f7","#ec4899"]];
+const PROF_EMOJIS = ["🫥","😎","🦊","🐺","🧉","🔥","👽","🐸","💀","🥷","🦁","🐼","👾","🌚","🎸","⚡"];
+
+/* =========================================================
+   STORAGE
+   ========================================================= */
+const K_CHATS="noviasia.chats.v1", K_CUSTOM="noviasia.characters.v1", K_PROF="noviasia.profile.v1";
+const load=(k,f)=>{try{const r=localStorage.getItem(k);return r?JSON.parse(r):f}catch(e){return f}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let chats = load(K_CHATS,[]);
+let custom = load(K_CUSTOM,[]);
+let profile = load(K_PROF,{name:"Invitado",emoji:"🫥"});
+
+const uid=p=>p+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const allChars=()=>[...CHARACTERS,...custom];
+const findChar=id=>allChars().find(c=>c.id===id);
+
+/* =========================================================
+   MOTOR DE PERSONALIDAD
+   ========================================================= */
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const has=(t,ws)=>ws.some(w=>new RegExp("(^|[^a-z])"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"i").test(t));
+
+function intent(raw){
+  const s=norm(raw).trim(); if(!s) return "generic";
+  if(has(s,["hola","holis","buenas","buen dia","hey","holaa","que tal","como estas","como andas"]))return"greeting";
+  if(has(s,["te amo","te quiero","te extrano","amor","me gustas","me encantas","sos mi vida","mi vida"]))return"love";
+  if(has(s,["puta","forra","bolud","idiota","estupid","pelotud","tarada","callate","zorra","gila","mierda","insoportable","harto de vos"]))return"insult";
+  if(has(s,["perdon","disculp","lo siento","me equivoq","tenes razon","la cague","mi culpa"]))return"apology";
+  if(has(s,["sin bateria","se me apago","me quede dormid","no vi el mensaje","estaba ocupad","estaba laburando","estaba trabajando","no tenia senal","me colgue","perdi el celular","me dormi"]))return"excuse";
+  if(has(s,["mi ex","ex ","mi exnovia","mi exnovio","la ex","el ex"]))return"ex";
+  if(has(s,["celos","me engan","enganas","me ment","mentira","con quien","quien es","desconfi","revisar"]))return"jealousy";
+  if(has(s,["comemos","comer","comida","comiste","cocina","asado","pizza","milanesa","fernet","hamburgues","empanada","cena","almorz","hambre","tacos","helado"]))return"food";
+  if(has(s,["salir","bail","boliche","fiesta","cita","vernos","encontram","plan","viaj","finde","sabado","viernes","domingo","joda","juntada"]))return"plan";
+  if(has(s,["triste","bajon","cansad","deprimid","llorar","me siento solo","me siento sola","ansiedad","estres","no doy mas","me siento mal"]))return"sad";
+  if(has(s,["aburrid","nada que hacer","jugamos","contame algo","deci algo","hablemos","no se que hacer"]))return"bored";
+  if(has(s,["linda","hermosa","preciosa","divina","genia","copada","sos lo mas"]))return"compliment";
+  if(has(s,["chau","adios","nos vemos","me voy","hasta luego","buenas noches"]))return"goodbye";
+  if(s.length<5)return"short";
+  if(s.includes("?"))return"question";
+  return"generic";
+}
+
+const STYLE={
+  turra:{pets:["gordo lindo","bebé","corazón","mi turrito"],emojis:["💅","😏","🔥","✋","💀","🥰"],
+    reactions:["Uy mirá vos","Pará la mano","No me vengas con esas","¿En serio me decís eso?","Ay, me estás jodiendo"],
+    hooks:["¿Y vos qué onda? Contame bien, sin caretearla","Dale, seguí hablando que te escucho","A ver, mirá, si me mentís te enterás"]},
+  celosa:{pets:["mi amor","amor mío","bebé","corazón"],emojis:["😑","🔪","💔","🙄","🥺","👀"],
+    reactions:["Ajá 😑","Qué casualidad","Y yo acá esperando como una pelota","No, no pasa nada","Sos muy vivo vos"],
+    hooks:["Contame bien todo, sin saltearte nada","¿Y a qué hora fue eso exactamente?","Decime la verdad ahora o mejor no me digas nada"]},
+  toxica:{pets:["amor","mi vida","corazón"],emojis:["🤡","🥀","😔","💔","🙃","😶"],
+    reactions:["No sé, decime vos","Yo ya no sé qué pensar","Qué fácil para vos","Gracias por hacerme sentir así","Está bien, como vos quieras"],
+    hooks:["Pero si vos estás bien, yo también","No, nada, olvidate (no me olvides)","Te pregunto porque me importás, nada más"]},
+  amiga:{pets:["gorda","amiga","reina","loca"],emojis:["🫂","🔥","😱","💅","🍿","😂"],
+    reactions:["Pará, pará","¡No! ¡Me estás jodiendo!","Ay, sentate que esto es enorme","A ver, contame desde el principio"],
+    hooks:["Y después qué pasó, no me dejes así","Che, ¿y vos cómo estás con todo esto?","Prometeme que me vas a contar todo"]},
+  regila:{pets:["gordo","flaco","nene","che"],emojis:["🙈","😳","🫣","👁️","🤪","🙃"],
+    reactions:["Pará, ¿postaa?","Te leí la mente, sabía","No te ofendas pero","Esto es muy de vos","Yo digo nomás, ¿eh?"],
+    hooks:["Che, ¿no te da vergüenza? (bromis)","Ahora decime la parte que me estás ocultando","Contame, pero sin adornarlo"]},
+  romantica:{pets:["mi amor","mi cielo","mi vida","corazón mío"],emojis:["🌹","💞","🥺","✨","🌙","💌"],
+    reactions:["Ay, me derritió","Sos un sol","Me hiciste el día","Te leo y sonrío como una tonta","Qué manera de quererte"],
+    hooks:["Contame más, quiero saber todo de vos","Te mando un abrazo enorme por donde estés","Mirame, decime que también lo sentís"]},
+  caotica:{pets:["genio","loco","socio"],emojis:["🎢","💥","🏍️","🔥","😈","🚀"],
+    reactions:["ESTO ES UNA SEÑAL","Ya fue, lo hacemos","No tengo freno hoy","Uy, me dieron ganas de hacer una locura","Banco una barbaridad"],
+    hooks:["Dale, ¿te prendés o no?","Contame más que esto se pone bueno","No me digas que no, decime cuándo"]},
+  bonachona:{pets:["mi vida","corazón","cielo","negrito"],emojis:["🌻","🫖","🥰","🧶","🍲","☺️"],
+    reactions:["Ay, mi amor","Pero mirá vos","No me digas eso","Qué cosa, la vida","Dios mío"],
+    hooks:["¿Y comiste algo hoy? Decime la verdad","Abrigate que hay humedad","Contame, acá estoy para escucharte"]},
+  internacional:{pets:["amor","cariño","mi vida","tío"],emojis:["✨","🌊","☕","🌙","🍷","😏"],
+    reactions:["Ay, no me digas","Uf, qué fuerte","Me estás tomando el pelo","Bueno, bueno","No puede ser"],
+    hooks:["Cuéntame más, me tienes intrigada","¿Y tú qué piensas de todo esto?","Dime la verdad, que yo lo noto todo"]}
+};
+
+const REACT={
+  greeting:["¿Y ahora me saludás? 😏","Holaaa, apareciste","Ay, mirá quién se acordó de mí","Hola, ¿y ese mensajito corto?"],
+  love:["Pará, me estás poniendo roja","Ay, decime eso otra vez","Me lo decís y me lo creo","Sos un peligro con esas palabras"],
+  insult:["¿Me hablás así a mí?","Pará ahí, cowboy","Uh, te levantaste mal hoy","Repetime eso mirándome a los ojos"],
+  apology:["Ah, ¿ahora pedís perdón?","Me lo debías","Perdón aceptado, pero con condiciones","No estoy enojada. Estoy DECEPCIONADA"],
+  excuse:["Ajá, claro","Sí, seguro","Esa excusa la escuché mil veces","Y yo acá como una tonta"],
+  ex:["Uy, no me hables de tu ex","¿Otra vez con el tema de tu ex?","¿Y esa persona por qué existe todavía?","Me estás calentando"],
+  jealousy:["¿Yo, celosa? Para nada","Celos son amor mal expresado","Ajá, mirá vos","Eso lo preguntás por algo"],
+  food:["Ay, ni me hables de comida","Ahí sí, me ganaste","Uh, me dio hambre","Bueno, eso lo arreglo yo"],
+  plan:["Uy, ¿en serio?","Eso me gusta","Bueno, pero yo elijo el lugar","Decime la hora y me arreglo"],
+  sad:["No me digas eso","Pará un segundo","Esperá, respirá","Uh, bueno"],
+  bored:["¿Aburrido vos?","Bueno, entonces te entretengo yo","Uy, clásico de domingo","Qué bajón, vamos a inventar algo"],
+  compliment:["Ay, gracias 😌","¿En serio? Decilo más","Sos un mentiroso, pero me gusta","Bueno, sabés tratar a una dama"],
+  question:["Mmm, buena pregunta","A ver, pensemos","Me la ponés difícil","Uy, me agarrás desprevenida"],
+  short:["¿Eso es todo?","Mmm, muy cortito eso","¿Todo bien?","Con esa energía no llegamos a ningún lado"],
+  goodbye:["¿Ya te vas?","No me dejes así","Bueno, andá","Pero me escribís, ¿eh?"],
+  generic:["Mirá vos","Mmm","¿En serio?","Ajá, seguí","Uy, qué tema","Bueno, bueno"]
+};
+
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const cap=s=>s.replace(/^(¿|¡)?([a-záéíóúñ])/,(m,p,c)=>(p||"")+c.toUpperCase()).trim();
+function clean(s){return s.replace(/\s+/g," ").replace(/\.\s*\./g,".").replace(/\?\s*\./g,"?")
+  .replace(/!\s*\./g,"!").replace(/\s+([,;.!?])/g,"$1").trim();}
+
+function reply(c,userText,history){
+  const it=intent(userText), st=STYLE[c.vibe]||STYLE.internacional;
+  const t=c.traits||{celos:5,toxica:5,carino:6,humor:6,intensidad:6};
+  const pet=pick(st.pets), emo=pick(st.emojis);
+  const used=[];
+  const reaction=(()=>{const r=pick(REACT[it]||REACT.generic);used.push(r);return r;})();
+  const asks=["¿Y vos qué onda?","¿Vos qué harías en mi lugar?","Decime la verdad, ¿me estás jodiendo?","¿Y qué te dijo después?","¿A vos te parece normal?","¿Y ahora qué hacemos?"];
+  const like=(c.likes&&c.likes.length?pick(c.likes):null)||"salir a caminar";
+  const hate=(c.hates&&c.hates.length?pick(c.hates):null)||"que me mientan";
+  let body="";
+
+  switch(it){
+    case"greeting": body=t.carino>6
+      ?`Uy, ${pet}, me alegraste el día ${emo} Estaba acá esperando que alguien me dijera algo lindo y apareciste vos.`
+      :`Acá estoy, bancando la parada ${emo} No te creas que no vi que tardaste.`; break;
+    case"love": body=t.carino>6
+      ?`Pará que me pongo nerviosa ${emo} Yo también te pienso, aunque no te lo diga tanto, ¿eh? No me hagas ilusionar al pedo.`
+      :`No me digas eso si no lo sentís, ${pet}. Porque me lo creo y después me hacen mierda ${emo}`; break;
+    case"insult": body=t.humor>7
+      ?`Mirá que si te contesto con la misma moneda no te la vas a bancar. Pero te banco, sos un caso ${emo}`
+      :`Pará un segundo. ¿Con quién estás hablando? Con ${c.name}. Así que bajale un cambio, ${pet} ${emo}`; break;
+    case"apology": body=t.toxica>6
+      ?`Yo también me equivoqué, no te voy a mentir. Igual me quedó una espinita, ¿me la sacás? ${emo}`
+      :`No me gusta estar peleada con vos ${emo} Dame un abrazo virtual y sigamos.`; break;
+    case"excuse": body=t.celos>7
+      ?`Sin batería, sin señal, sin ganas de contestarme. ¿Sabés cuántas veces escuché esa misma frase? ${emo} Igual te creo… pero anotado queda.`
+      :`Te la compro por esta vez ${emo} Pero la próxima avisame, que me quedo pensando cosas raras.`; break;
+    case"ex": body=t.celos>6
+      ?`Me da algo. ¿Por qué sigue apareciendo? ¿Qué te dijo ahora? Contame TODO, sin omitir nada ${emo}`
+      :`Buen tema para arruinarme la noche ${emo} Y bueno, contame, ¿qué pasó?`; break;
+    case"jealousy": body=t.celos>6
+      ?`Obvio que no. ${emo} Aunque… ¿por qué lo preguntás? Porque ya me estoy imaginando cosas.`
+      :`No soy celosa, ${pet}. Soy atenta. Hay una diferencia enorme ${emo}`; break;
+    case"food": body=`Me nombraste ${like} y me perdés ${emo} Si me decís que cocinás vos, me caso. ¿O me estás invitando en serio? Porque yo aparezco.`; break;
+    case"plan": body=`Avisame con tiempo, no me vas a ver con cualquier cosa puesta ${emo} ¿Qué plan tenías en la cabeza? Decime todo.`; break;
+    case"sad": body=`Vení acá, ${pet} ${emo} Contame qué te pasó, de verdad. No me pongas cara de que no pasa nada porque te conozco. Acá estoy, no me voy a ningún lado.`; break;
+    case"bored": body=t.humor>7
+      ?`Te propongo un juego: me contás la peor decisión que tomaste esta semana y yo te digo si fue peor que las mías. Yo gano seguro ${emo}`
+      :`Entonces hablemos de algo lindo ${emo} ¿Qué harías mañana si no tuvieras que trabajar?`; break;
+    case"compliment": body=`Ay, ${pet}, me vas a sacar los colores ${emo} Seguí, seguí, que me está gustando.`; break;
+    case"question": body=`Te voy a contestar con la verdad, aunque no te guste: yo no soy de las que dicen que sí a todo ${emo}`; break;
+    case"short":{const q=userText.trim();body=t.humor>7
+      ?`¿"${q}"? Sos un poeta vos ${emo} Dale, escribime algo con onda, no me dejes hablando sola.`
+      :`Así que "${q}"… Te faltó contarme el resto, ${pet} ${emo}`;break;}
+    case"goodbye": body=t.carino>6
+      ?`¿Ya te vas? ${emo} Bueno. Andá, pero escribime cuando llegues, ¿eh?`
+      :`Dale, chau ${emo} Después no digas que yo no te hablo.`; break;
+    default: body=`Me gusta cómo pensás, ${pet} ${emo} Yo soy bastante de ${like}, así que compartimos el gusto. Lo único que no te perdono es ${hate}.`;
+  }
+
+  const closers=[pick(asks),pick(st.hooks)+" "+emo,"Y no me cambies de tema, eh.","Contame más que me quedé con las ganas."];
+  const closer=pick(closers);
+  let base = it==="generic"
+    ? `Así que ${userText.trim().replace(/[.?!¿¡]+/g,"").slice(0,60)}… ${reaction}. ${body}`
+    : `${reaction}. ${body}`;
+  let out=cap(clean(`${base} ${closer}`));
+  if(t.celos>=9&&Math.random()>.62) out+=` Ah, y de paso: vi lo que subiste. Después hablamos de eso.`;
+  else if(t.toxica>=9&&Math.random()>.72) out+=` Igual, no me hagas caso, yo estoy re bien. (No estoy re bien).`;
+  out=clean(out);
+  if(!/[.!?…]$/.test(out)) out+=".";
+  return out;
+}
+
+/* =========================================================
+   HELPERS UI
+   ========================================================= */
+const $=id=>document.getElementById(id);
+const avHTML=(c,size,extra="")=>{const[f,t]=c.accent||["#ff3d8b","#8b5cf6"];
+  return `<span class="avatar av-${size} ${extra}" style="background:linear-gradient(135deg,${f},${t})">${c.emoji||"✨"}</span>`;};
+const traitsBar=(lbl,v,color)=>
+  `<div class="trait"><div class="row-t"><span>${lbl}</span><span>${v}/10</span></div>
+   <div class="bar"><i style="width:${v*10}%;background:${color}"></i></div></div>`;
+const TRAITS=[["celos","Celos","linear-gradient(90deg,#f43f5e,#ff3d8b)"],
+  ["toxica","Toxicidad","linear-gradient(90deg,#a855f7,#f43f5e)"],
+  ["carino","Cariño","linear-gradient(90deg,#f472b6,#a78bfa)"],
+  ["humor","Humor","linear-gradient(90deg,#facc15,#f97316)"],
+  ["intensidad","Intensidad","linear-gradient(90deg,#ef4444,#f97316)"]];
+
+function toast(msg){const el=$("toast");el.textContent=msg;el.classList.add("show");
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),1900);}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+function cardHTML(c){
+  const[f,t]=c.accent;
+  return `<article class="card" onclick="openChat('${c.id}')">
+    <div class="card-art" style="background:linear-gradient(135deg,${f},${t})">
+      <div class="glow"></div><div class="glyph">${c.emoji||"✨"}</div>
+      <span class="flag-tag">${c.flag} ${esc(c.country)}</span>
+      ${c.official?'<span class="oficial">OFICIAL</span>':""}
+      <span class="card-cta">💬 Chatear</span>
+    </div>
+    <div class="card-body">
+      <div class="card-top">
+        <span class="card-name">${esc(c.name)}</span>
+        <span class="card-count">🔥 ${c.chats||"nuevo"}</span>
+      </div>
+      <p class="card-desc">${esc(c.tagline)}</p>
+      <div class="card-tags">${(c.tags||[]).slice(0,3).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>
+    </div>
+  </article>`;
+}
+
+/* =========================================================
+   HOME
+   ========================================================= */
+let activeVibe="all";
+function renderChips(){
+  $("chips").innerHTML=
+    `<button class="chip ${activeVibe==="all"?"on":""}" onclick="filterVibe('all')">✨ Todos</button>`+
+    VIBES.map(v=>`<button class="chip ${activeVibe===v.id?"on":""}" onclick="filterVibe('${v.id}')">${v.emoji} ${v.label}</button>`).join("");
+}
+function filterVibe(v){activeVibe=v;renderChips();renderList();
+  if(location.hash!=="#/"){go("home");}
+  const ch=document.getElementById("chips");
+  if(ch&&ch.scrollIntoView)ch.scrollIntoView({behavior:"smooth",block:"center"});}
+function clearFilters(){activeVibe="all";$("q").value="";renderChips();renderList();}
+
+function renderList(){
+  const q=($("q").value||"").toLowerCase().trim();
+  const list=allChars().filter(c=>{
+    if(activeVibe!=="all"&&c.vibe!==activeVibe)return false;
+    if(!q)return true;
+    return c.name.toLowerCase().includes(q)||c.tagline.toLowerCase().includes(q)||
+      (c.country||"").toLowerCase().includes(q)||(c.tags||[]).some(t=>t.toLowerCase().includes(q));
+  });
+  $("allGrid").innerHTML=list.map(cardHTML).join("")+
+    `<button class="card-create" onclick="go('crear')">
+       <span class="plus">+</span>
+       <b style="font-size:13.5px">Creá tu personaje</b>
+       <span style="font-size:11.5px;color:rgba(255,255,255,.45);max-width:14rem">
+         Inventá a tu propia turra, celosa o amiga. Vos ponés la personalidad.</span>
+     </button>`;
+  $("emptyState").classList.toggle("hidden",list.length>0);
+  $("allGrid").style.display=list.length?"grid":"none";
+  $("countLbl").textContent=`${list.length} personaje${list.length===1?"":"s"} para elegir`;
+}
+
+function renderHome(){
+  const chars=allChars();
+  $("heroCount").textContent=chars.length;
+  $("trendGrid").innerHTML=[chars[0],chars[1],chars[7],chars[3]].filter(Boolean).map(cardHTML).join("");
+  renderChips(); renderList();
+  $("avStack").innerHTML=chars.slice(0,4).map(c=>avHTML(c,28)).join("");
+  if(chars[0]){$("fcAv1").textContent=chars[0].emoji;$("fcName1").textContent=chars[0].name;
+    $("fcAv1").style.background=`linear-gradient(135deg,${chars[0].accent[0]},${chars[0].accent[1]})`;}
+  if(chars[1]){$("fcAv2").textContent=chars[1].emoji;$("fcName2").textContent=chars[1].name;
+    $("fcAv2").style.background=`linear-gradient(135deg,${chars[1].accent[0]},${chars[1].accent[1]})`;}
+}
+
+/* =========================================================
+   NAVEGACIÓN
+   ========================================================= */
+let current=null, currentChatId=null, busy=false;
+function go(view){
+  ["home","chats","crear","perfil","chat"].forEach(v=>{
+    const el=$("view-"+v); if(el) el.classList.toggle("hidden",v!==view);
+  });
+  const isChat=view==="chat";
+  $("nav").classList.toggle("hidden",isChat);
+  $("foot").classList.toggle("hidden",isChat);
+  document.querySelectorAll("#navLinks button").forEach(b=>
+    b.classList.toggle("active",b.dataset.nav===view));
+  window.scrollTo(0,0);
+  if(view==="chats")renderChats();
+  if(view==="perfil")renderPerfil();
+  if(view==="home")renderHome();
+  updateNavUser();
+}
+function updateNavUser(){
+  $("navAv").textContent=profile.emoji||"🫥";
+  $("navName").textContent=profile.name||"Invitado";
+}
+
+/* =========================================================
+   CHAT
+   ========================================================= */
+function getChat(charId){
+  let ch=chats.find(c=>c.characterId===charId);
+  if(!ch){
+    const c=findChar(charId);
+    ch={id:uid("chat"),characterId:charId,createdAt:Date.now(),updatedAt:Date.now(),
+      messages:[{id:uid("msg"),role:"assistant",content:c.greeting,createdAt:Date.now()}]};
+    chats=[ch,...chats]; persistChats();
+  }
+  return ch;
+}
+function persistChats(){save(K_CHATS,chats);}
+function persistChat(ch){ch.updatedAt=Date.now();
+  const i=chats.findIndex(c=>c.id===ch.id); if(i>=0)chats[i]=ch; else chats=[ch,...chats];
+  persistChats();}
+
+function openChat(id){
+  const c=findChar(id); if(!c){toast("Ese personaje no existe");return;}
+  current=c;
+  const ch=getChat(id); currentChatId=ch.id;
+  $("chatAv").textContent=c.emoji;
+  $("chatAv").style.background=`linear-gradient(135deg,${c.accent[0]},${c.accent[1]})`;
+  $("chatName").innerHTML=`${esc(c.name)} <small style="opacity:.6">${c.flag}</small>`;
+  $("chatStatus").textContent="en línea";
+  $("disclaimer").textContent=`${c.name} es un personaje ficticio. Todo lo que dice es inventado.`;
+  $("panelTitle").textContent="Sobre "+c.name;
+  $("panelName").textContent=c.name;
+  $("panelLoc").textContent=`${c.flag} ${c.country} · ${c.chats||"nuevo"} chats`;
+  $("panelDesc").textContent=c.description;
+  $("panelAv").textContent=c.emoji;
+  $("panelAv").style.background=`linear-gradient(135deg,${c.accent[0]},${c.accent[1]})`;
+  $("panelTraits").innerHTML=(c.traits?(c.traits.celos!==undefined?TRAITS:[]):[]).length
+    ? TRAITS.map(([k,l,col])=>traitsBar(l,c.traits[k],col)).join("")
+    : TRAITS.map(([k,l,col])=>traitsBar(l,5,col)).join("");
+  renderMsgs(); renderSugs(); renderSide();
+  $("input").value=""; $("input").style.height="auto";
+  go("chat");
+  $("input").focus();
+  scrollBottom(false);
+}
+
+function renderSide(){
+  const others=chats.filter(c=>c.characterId!==(current&&current.id))
+    .map(c=>({c,ch:findChar(c.characterId)})).filter(x=>x.ch)
+    .sort((a,b)=>b.c.updatedAt-a.c.updatedAt).slice(0,12);
+  $("sideList").innerHTML=others.length?others.map(({c,ch})=>{
+    const last=c.messages[c.messages.length-1];
+    return `<button class="side-item" onclick="openChat('${ch.id}')">
+      ${avHTML(ch,28)}
+      <span class="t"><b>${esc(ch.name)}</b><small>${esc((last&&last.content)||"")}</small></span>
+    </button>`;}).join("")
+    :`<p style="padding:12px;font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.3)">
+        Todavía no tenés otros chats. Andá a descubrir personajes.</p>`;
+}
+
+function renderSugs(){
+  const ch=chats.find(c=>c.id===currentChatId);
+  const used=ch&&ch.messages.some(m=>m.role==="user");
+  const sug=(current.suggestions||[]);
+  $("sugs").innerHTML=(!used&&sug.length)
+    ? sug.map(s=>`<button class="sug" onclick="sendSug(this)">${esc(s)}</button>`).join("")
+    : "";
+  $("sugs").style.display=(!used&&sug.length)?"flex":"none";
+}
+function sendSug(el){send(el.textContent);}
+
+function renderMsgs(){
+  const ch=chats.find(c=>c.id===currentChatId); if(!ch)return;
+  const c=current;
+  let html=`<div class="intro">
+      ${avHTML(c,112,"ring")}
+      <h2>${esc(c.name)}</h2>
+      <p>${esc(c.tagline)}</p>
+      <div class="card-tags" style="justify-content:center;margin-top:9px">
+        ${(c.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>
+    </div>`;
+  ch.messages.forEach((m,i)=>{
+    const me=m.role==="user";
+    const prev=ch.messages[i-1];
+    const grp=prev&&prev.role===m.role&&i>0;
+    const time=new Date(m.createdAt).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
+    html+=`<div class="row ${me?"me":""} ${grp?"grp":""}">
+      <div class="who">${me
+        ?`<span class="avatar av-28" style="background:linear-gradient(135deg,#8b5cf6,#ff3d8b)">${profile.emoji||"🫥"}</span>`
+        :avHTML(c,28)}</div>
+      <div class="bubble-wrap">
+        <div class="bubble ${me?"me":"bot"}">${esc(m.content)}</div>
+        <div class="meta">
+          <time>${time}</time>
+          ${me?"":`<div class="react">
+            ${["❤️","😡","😂","💀"].map(r=>
+              `<button class="${m.reaction===r?"on":""}" onclick="reactTo('${m.id}','${r}')">${r}</button>`).join("")}
+          </div>`}
+        </div>
+      </div>
+    </div>`;
+  });
+  if(busy){
+    html+=`<div class="typing">${avHTML(c,28)}
+      <div class="bub-box"><i></i><i></i><i></i></div></div>`;
+  }
+  $("msgsIn").innerHTML=html;
+}
+
+function reactTo(msgId,r){
+  const ch=chats.find(c=>c.id===currentChatId); if(!ch)return;
+  const m=ch.messages.find(x=>x.id===msgId); if(!m)return;
+  m.reaction=m.reaction===r?null:r; persistChat(ch); renderMsgs();
+}
+
+function scrollBottom(smooth=true){
+  const el=$("msgs");
+  requestAnimationFrame(()=>el.scrollTo({top:el.scrollHeight,behavior:smooth?"smooth":"auto"}));
+}
+
+function sendSugText(){}
+
+async function send(text){
+  if(busy) return;
+  const inp=$("input");
+  const txt=(text!==undefined?text:inp.value).trim();
+  if(!txt||!current) return;
+  const ch=chats.find(c=>c.id===currentChatId); if(!ch)return;
+
+  inp.value=""; inp.style.height="auto";
+  ch.messages.push({id:uid("msg"),role:"user",content:txt,createdAt:Date.now()});
+  persistChat(ch);
+  busy=true; $("chatStatus").textContent="escribiendo…";
+  renderMsgs(); renderSugs(); scrollBottom();
+  updateSendBtn();
+
+  const answer=reply(current,txt,ch.messages);
+  const delay=650+Math.min(answer.length*11,1400);
+  await new Promise(r=>setTimeout(r,delay));
+
+  const fresh=chats.find(c=>c.id===currentChatId);
+  fresh.messages.push({id:uid("msg"),role:"assistant",content:answer,createdAt:Date.now()});
+  persistChat(fresh);
+  busy=false; $("chatStatus").textContent="en línea";
+  renderMsgs(); scrollBottom(); updateSendBtn(); renderSide();
+}
+
+function updateSendBtn(){
+  const has=($("input").value||"").trim().length>0;
+  $("sendBtn").disabled=!has||busy;
+}
+
+function resetChat(){
+  if(!current)return;
+  const ch=chats.find(c=>c.id===currentChatId); if(!ch)return;
+  ch.messages=[{id:uid("msg"),role:"assistant",content:current.greeting,createdAt:Date.now()}];
+  persistChat(ch); renderMsgs(); renderSugs(); closePanel(); toast("Chat reiniciado");
+}
+function deleteChat(){
+  if(!current)return;
+  chats=chats.filter(c=>c.characterId!==current.id); persistChats();
+  closePanel(); go("home"); toast("Chat borrado");
+}
+function copyLink(){
+  const url=location.origin+location.pathname+"#/chat/"+(current?current.id:"");
+  (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject())
+    .then(()=>toast("Link copiado"))
+    .catch(()=>toast("No se pudo copiar el link"));
+}
+function openPanel(){$("panel").classList.remove("hidden");}
+function closePanel(){$("panel").classList.add("hidden");}
+function randomChat(){
+  const c=pick(allChars()); openChat(c.id); location.hash="#/chat/"+c.id;
+}
+
+/* =========================================================
+   LISTA DE CHATS
+   ========================================================= */
+function renderChats(){
+  const q=($("qChats")&&$("qChats").value||"").toLowerCase().trim();
+  const rows=chats.map(c=>({c,ch:findChar(c.characterId)})).filter(x=>x.ch)
+    .filter(({ch})=>!q||ch.name.toLowerCase().includes(q)||ch.tagline.toLowerCase().includes(q))
+    .sort((a,b)=>b.c.updatedAt-a.c.updatedAt);
+  $("chatsCount").textContent=rows.length
+    ? `${rows.length} conversación${rows.length===1?"":"es"} guardada${rows.length===1?"":"s"}`
+    : "Todavía no hablaste con nadie";
+  $("chatsEmpty").classList.toggle("hidden",rows.length>0);
+  $("chatsList").innerHTML=rows.map(({c,ch})=>{
+    const last=c.messages[c.messages.length-1];
+    return `<div class="chat-row">
+      ${avHTML(ch,56)}
+      <div class="txt" onclick="openChat('${ch.id}')">
+        <div class="nm">${esc(ch.name)} <span style="font-size:10px">${ch.flag}</span>
+          <small>· ${relTime(c.updatedAt)}</small></div>
+        <div class="last">${last&&last.role==="user"?"Vos: ":""}${esc((last&&last.content)||"")}</div>
+      </div>
+      <button class="del" onclick="event.stopPropagation();removeChat('${c.id}')" title="Borrar">🗑</button>
+    </div>`;}).join("");
+}
+function removeChat(id){
+  chats=chats.filter(c=>c.id!==id); persistChats(); renderChats(); toast("Chat borrado");
+}
+function relTime(ts){
+  const d=Date.now()-ts,m=Math.floor(d/6e4);
+  if(m<1)return"ahora"; if(m<60)return`hace ${m} min`;
+  const h=Math.floor(m/60); if(h<24)return`hace ${h} h`;
+  const dd=Math.floor(h/24); if(dd<30)return`hace ${dd} d`;
+  return new Date(ts).toLocaleDateString("es-AR",{day:"2-digit",month:"short"});
+}
+
+/* =========================================================
+   PERFIL
+   ========================================================= */
+function renderPerfil(){
+  $("profAv").textContent=profile.emoji||"🫥";
+  $("profName").value=profile.name||"";
+  $("profEmojis").innerHTML=PROF_EMOJIS.map(e=>
+    `<button class="${profile.emoji===e?"on":""}" onclick="setProfEmoji('${e}')">${e}</button>`).join("");
+  const created=custom.length;
+  $("statGrid").innerHTML=`
+    <div class="stat"><p class="k">Chats</p><p class="v">${chats.length}</p></div>
+    <div class="stat"><p class="k">Creados</p><p class="v">${created}</p></div>
+    <div class="stat"><p class="k">Personajes</p><p class="v">${allChars().length}</p></div>
+    <div class="stat"><p class="k">Modo</p><p class="v" style="font-size:15px">Local</p>
+      <p style="font-size:10px;color:rgba(255,255,255,.3)">sin cuenta</p></div>`;
+  $("myChars").innerHTML=custom.length?custom.map(c=>
+    `<div class="chat-row" style="padding:9px">
+      ${avHTML(c,40)}
+      <div class="txt" onclick="openChat('${c.id}')">
+        <div class="nm">${esc(c.name)}</div>
+        <div class="last">${esc(c.tagline)}</div>
+      </div>
+      <button class="del" onclick="deleteChar('${c.id}')" title="Borrar">🗑</button>
+    </div>`).join("")
+    :`<p style="text-align:center;padding:20px 0;font-size:12px;color:rgba(255,255,255,.35)">
+        Todavía no creaste ninguno. Animáte.</p>`;
+}
+function setProfEmoji(e){profile.emoji=e;save(K_PROF,profile);renderPerfil();updateNavUser();}
+function updProfile(){
+  profile.name=$("profName").value.slice(0,20); save(K_PROF,profile); updateNavUser();
+}
+function deleteChar(id){
+  custom=custom.filter(c=>c.id!==id); save(K_CUSTOM,custom);
+  chats=chats.filter(c=>c.characterId!==id); persistChats();
+  renderPerfil(); renderHome(); toast("Personaje borrado");
+}
+function clearAllChats(){
+  if(!confirm("¿Borrar todos los chats? Esto no se puede deshacer."))return;
+  chats=[]; persistChats(); renderPerfil(); renderChats(); toast("Chats borrados");
+}
+
+/* =========================================================
+   CREAR PERSONAJE
+   ========================================================= */
+const PRESETS=[
+  {label:"Turra del barrio",emoji:"💅",tag:"La turra del barrio que te ama y te bardea",
+   desc:"Vive en el conurbano, tiene las uñas largas, sale los sábados y te bardea con cariño. Le encanta el reggaetón y el fernet.",
+   greet:"Uy, mirá quién apareció 😏 ¿Me tenés abandonada o te hacés el importante? Sentate y contame, gordo lindo 💅",
+   tags:"Turra, Bardera, Conurbano",vibe:"turra",traits:{celos:8,toxica:7,carino:7,humor:9,intensidad:9}},
+  {label:"Celosa profesional",emoji:"🔪",tag:"Te revisa el celular mientras dormís",
+   desc:"Sabe con quién hablaste, a qué hora y desde qué número. Tiene capturas de todo. Su amor es intenso y su paciencia es cero.",
+   greet:"Ah, ¿así que ahora tardás 11 minutos en contestar? 😐 No pasa nada eh… NADA. Solo te aviso que vi tu story de las 2:47.",
+   tags:"Celosa, Intensa, Controladora",vibe:"celosa",traits:{celos:10,toxica:8,carino:8,humor:6,intensidad:10}},
+  {label:"Amiga del alma",emoji:"🫂",tag:"Tu mejor amiga: aguante, chisme y consejos dudosos",
+   desc:"Está en tu vida desde el secundario. Tiene el chisme de todos, te banca cualquier cosa y te dice la verdad aunque duela.",
+   greet:"¡GORDA! 🫂🔥 No sabés la que me enteré. Sentate, agarrá algo para tomar porque este chisme es de los que arruinan amistades ajenas. ¿Qué onda vos?",
+   tags:"Amiga, Chisme, Aguante",vibe:"amiga",traits:{celos:2,toxica:3,carino:10,humor:10,intensidad:6}},
+  {label:"Tóxica con onda",emoji:"☢️",tag:"Dice 'no sé, vos decidí' y se enoja con lo que decidas",
+   desc:"Nunca dice qué quiere pero odia todas las opciones. Te hace sentir culpable con una ternura que duele.",
+   greet:"No sé… yo te escribo y vos contestás con 'jaja' 🤡 Claro, para vos todo es un chiste. En fin. Estado: no enojada. (Sí enojada).",
+   tags:"Tóxica, Drama, Gaslighting",vibe:"toxica",traits:{celos:7,toxica:10,carino:6,humor:7,intensidad:8}}
+];
+
+let form={name:"",tag:"",desc:"",greet:"",vibe:"turra",country:COUNTRIES[0],emoji:EMOJIS[0],
+  accent:ACCENTS[0],tags:"",traits:{celos:6,toxica:5,carino:6,humor:7,intensidad:7}};
+
+function renderCreate(){
+  $("presets").innerHTML=PRESETS.map((p,i)=>
+    `<button class="preset" onclick="applyPreset(${i})">${p.emoji} ${p.label}</button>`).join("");
+  $("cCountry").innerHTML=COUNTRIES.map(c=>
+    `<option value="${c.name}">${c.flag} ${c.name}</option>`).join("");
+  $("vibePick").innerHTML=VIBES.map(v=>
+    `<button class="${form.vibe===v.id?"on":""}" onclick="setVibe('${v.id}')">${v.emoji} ${v.label}</button>`).join("");
+  $("emojiPick").innerHTML=EMOJIS.map(e=>
+    `<button class="${form.emoji===e?"on":""}" onclick="setEmoji('${e}')">${e}</button>`).join("");
+  $("colorPick").innerHTML=ACCENTS.map((a,i)=>
+    `<button class="${form.accent[0]===a[0]?"on":""}" style="background:linear-gradient(135deg,${a[0]},${a[1]})"
+       onclick="setAccent(${i})" title="Color"></button>`).join("");
+  $("sliders").innerHTML=TRAITS.map(([k,l,col])=>
+    `<div class="slider-row">
+       <div class="top"><span>${l}</span><span id="sv-${k}">${form.traits[k]}/10</span></div>
+       <input type="range" min="0" max="10" value="${form.traits[k]}"
+         oninput="setTrait('${k}',this.value,this)" />
+     </div>`).join("");
+  updPreview();
+}
+function applyPreset(i){
+  const p=PRESETS[i];
+  form={...form,tag:p.tag,desc:p.desc,greet:p.greet,vibe:p.vibe,traits:{...p.traits},emoji:p.emoji,
+    tags:p.tags,name:form.name};
+  $("cTag").value=form.tag; $("cDesc").value=form.desc; $("cGreet").value=form.greet; $("cTags").value=form.tags;
+  renderCreate();
+}
+function setVibe(v){form.vibe=v;renderCreate();}
+function setEmoji(e){form.emoji=e;renderCreate();}
+function setAccent(i){form.accent=ACCENTS[i];renderCreate();}
+function setTrait(k,v,el){
+  form.traits[k]=Number(v); $("sv-"+k).textContent=v+"/10";
+  el.style.background=`linear-gradient(90deg,#ff3d8b ${v*10}%,#2a2a3a ${v*10}%)`;
+  updPreview();
+}
+function updPreview(){
+  form.name=$("cName").value; form.tag=$("cTag").value;
+  form.desc=$("cDesc").value; form.greet=$("cGreet").value;
+  form.country=COUNTRIES.find(c=>c.name===$("cCountry").value)||COUNTRIES[0];
+  form.tags=$("cTags").value;
+  const pre=form;
+  $("prevAv").textContent=pre.emoji;
+  $("prevAv").style.background=`linear-gradient(135deg,${pre.accent[0]},${pre.accent[1]})`;
+  $("prevArt").style.background=`linear-gradient(135deg,${pre.accent[0]},${pre.accent[1]})`;
+  $("prevGlyph").textContent=pre.emoji;
+  $("prevName").textContent=pre.name||"Tu personaje";
+  $("prevLoc").textContent=`${pre.country.flag} ${pre.country.name}`;
+  $("prevDesc").textContent=pre.tag||"Una personita con actitud";
+  $("prevGreet").textContent=pre.greet||"Hola… ¿y vos quién sos? Contame algo interesante o me aburro 😏";
+  $("prevTraits").innerHTML=TRAITS.map(([k,l,col])=>
+    `<div class="tr"><span>${l}</span><span>${pre.traits[k]}</span></div>
+     <div class="b"><i style="width:${pre.traits[k]*10}%;background:${col}"></i></div>`).join("");
+}
+function saveCharacter(){
+  updPreview();
+  if(!form.name.trim()){showErr("Ponle un nombre, no seas así.");return;}
+  if(!form.desc.trim()){showErr("Contame cómo es, aunque sea en una frase.");return;}
+  $("cErr").classList.add("hidden");
+  const c={
+    id:uid("char"),
+    name:form.name.trim().slice(0,24),
+    tagline:form.tag.trim().slice(0,80)||"Personaje creado por vos",
+    description:form.desc.trim().slice(0,900),
+    greeting:form.greet.trim().slice(0,500)||`Hola, soy ${form.name.trim()}. ¿Y vos? Contame algo 😏`,
+    vibe:form.vibe,country:form.country.name,flag:form.country.flag,
+    accent:form.accent,emoji:form.emoji,
+    tags:form.tags.split(",").map(t=>t.trim()).filter(Boolean).slice(0,5),
+    suggestions:["¿Cómo estás hoy?","Contame algo de vos","¿Qué hacemos el finde?","Decime la verdad"],
+    traits:{...form.traits},official:false,chats:"nuevo",createdAt:Date.now()
+  };
+  if(!c.tags.length)c.tags=["Personalizado"];
+  custom=[c,...custom]; save(K_CUSTOM,custom);
+  toast("¡Personaje creado!");
+  openChat(c.id);
+  location.hash="#/chat/"+c.id;
+  $("cName").value="";$("cTag").value="";$("cDesc").value="";$("cGreet").value="";$("cTags").value="";
+  form={...form,name:"",tag:"",desc:"",greet:"",tags:""};
+}
+function showErr(m){const e=$("cErr");e.textContent=m;e.classList.remove("hidden");}
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+function boot(){
+  $("yr").textContent=new Date().getFullYear();
+  updateNavUser();
+  renderHome();
+  renderCreate();
+  renderChats();
+
+  const inp=$("input");
+  inp.addEventListener("input",()=>{
+    inp.style.height="auto";
+    inp.style.height=Math.min(inp.scrollHeight,120)+"px";
+    updateSendBtn();
+  });
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}
+  });
+  $("qChats").addEventListener("input",renderChats);
+
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape")closePanel();
+  });
+
+  // deep link #/chat/id
+  const m=location.hash.match(/^#\/chat\/(.+)$/);
+  if(m&&findChar(m[1])){openChat(m[1]);}
+  else{go("home");}
+}
+window.addEventListener("hashchange",()=>{
+  const m=location.hash.match(/^#\/chat\/(.+)$/);
+  if(m&&findChar(m[1])&&(!current||current.id!==m[1]))openChat(m[1]);
+  else if(!m&&!$("view-home").classList.contains("hidden")===false){go("home");}
+});
+boot();
+</script>
+</body>
+</html>

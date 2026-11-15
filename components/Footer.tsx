@@ -47,6 +47,7 @@ export default function Footer() {
                 Legal
               </h4>
               <ul className="space-y-2 text-sm text-white/60">
+                <li><a href="/noviasia.html" target="_blank" rel="noopener" className="hover:text-white">Versión HTML</a></li>
                 <li><Link href="/legal" className="hover:text-white">Términos</Link></li>
                 <li><Link href="/legal#privacidad" className="hover:text-white">Privacidad</Link></li>
                 <li><Link href="/perfil" className="hover:text-white">Mi perfil</Link></li>

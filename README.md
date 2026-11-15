@@ -10,7 +10,7 @@ gente re gila y personajes de todo el mundo.
 
 ## ✨ Qué tiene
 
-- 🎭 **17 personajes** listos para chatear (argentinos + internacionales)
+- 🎭 **16 personajes** listos para chatear (argentinos + internacionales)
 - 💬 **Chat funcional de verdad**: mensajes guardados, historial, "escribiendo…", delay humano
 - 🧠 **Motor de personalidades propio**: detecta intención (amor, celos, insulto, excusa, comida, plan, tristeza…) y responde según los rasgos del personaje
 - 🔌 **IA real opcional**: si configurás una API key, las respuestas las genera un LLM manteniendo el personaje (fallback automático al motor local)
@@ -19,12 +19,33 @@ gente re gila y personajes de todo el mundo.
 - 📱 **Responsive** y mobile-first
 - 🗄️ **Sin base de datos ni cuentas**: todo se guarda en `localStorage`
 
-## 🚀 Correrlo
+## 🌐 Verla en HTML (la forma más rápida)
+
+Hay **dos formas** de ver la web:
+
+### 1. Un solo archivo HTML (sin instalar nada) ⭐
+
+**[`noviasia.html`](./noviasia.html)** — abrila con doble clic en cualquier navegador.
+Es la app completa (16 personajes, chat, creador, perfil) en un único archivo de ~104 KB,
+sin servidor, sin build, sin dependencias. Funciona offline, incluso desde una URL `file://`.
+
+También está publicada como [`public/noviasia.html`](./public/noviasia.html), así que si
+corrés la app Next queda disponible en `http://localhost:3000/noviasia.html`.
+
+Para regenerarla después de tocar los personajes:
+
+```bash
+npm run build:html
+```
+
+### 2. La app Next.js completa
 
 ```bash
 npm install
 npm run dev
 ```
+
+## 🚀 Correrlo
 
 Abrí [http://localhost:3000](http://localhost:3000).
 
@@ -56,6 +77,11 @@ app/
   perfil/page.tsx       Perfil, tus personajes y borrado de datos
   legal/page.tsx        Términos, privacidad y salud mental
   api/chat/route.ts     API: LLM real con fallback al motor local
+standalone/
+  template.html         Plantilla del HTML autónomo
+scripts/
+  build-standalone.ts   Genera noviasia.html con los 16 personajes
+noviasia.html           ⭐ La app entera en un archivo: abrilo con doble clic
 components/             Navbar, tarjetas, avatar, chat, creador…
 lib/
   characters.ts         Los 17 personajes y sus personalidades
