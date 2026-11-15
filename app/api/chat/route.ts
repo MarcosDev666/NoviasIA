@@ -20,47 +20,73 @@ type Provider = {
   label: string;
 };
 
+/**
+ * Orden de preferencia. El primero que tenga clave configurada gana.
+ * Todos los proveedores de la lista hablan el formato OpenAI, así que
+ * sólo cambia la URL y el modelo por defecto.
+ */
 function resolveProvider(): Provider | null {
-  const key =
-    process.env.OPENAI_API_KEY ||
-    process.env.GROQ_API_KEY ||
-    process.env.OPENROUTER_API_KEY ||
-    process.env.TOGETHER_API_KEY ||
-    "";
+  const pick = (envKey: string, model: string): string | undefined =>
+    process.env[envKey] ? process.env.NOVIASIA_MODEL || model : undefined;
 
-  if (!key) return null;
+  if (process.env.GROQ_API_KEY) {
+    return {
+      url: "https://api.groq.com/openai/v1/chat/completions",
+      key: process.env.GROQ_API_KEY,
+      // Tier gratis generoso: 14.400 pedidos/día y rapidísimo.
+      model: pick("GROQ_API_KEY", "llama-3.1-8b-instant")!,
+      label: "groq",
+    };
+  }
+
+  if (process.env.CEREBRAS_API_KEY) {
+    return {
+      url: "https://api.cerebras.ai/v1/chat/completions",
+      key: process.env.CEREBRAS_API_KEY,
+      model: pick("CEREBRAS_API_KEY", "llama3.1-8b")!,
+      label: "cerebras",
+    };
+  }
 
   if (process.env.OPENROUTER_API_KEY) {
     return {
       url: "https://openrouter.ai/api/v1/chat/completions",
       key: process.env.OPENROUTER_API_KEY,
-      model: process.env.NOVIASIA_MODEL || "meta-llama/llama-3.1-8b-instruct",
+      // OJO: tiene que terminar en ":free" o te cobra créditos.
+      model: pick("OPENROUTER_API_KEY", "meta-llama/llama-3.3-70b-instruct:free")!,
       label: "openrouter",
     };
   }
-  if (process.env.GROQ_API_KEY) {
+
+  if (process.env.MISTRAL_API_KEY) {
     return {
-      url: "https://api.groq.com/openai/v1/chat/completions",
-      key: process.env.GROQ_API_KEY,
-      model: process.env.NOVIASIA_MODEL || "llama-3.1-8b-instant",
-      label: "groq",
+      url: "https://api.mistral.ai/v1/chat/completions",
+      key: process.env.MISTRAL_API_KEY,
+      model: pick("MISTRAL_API_KEY", "mistral-small-latest")!,
+      label: "mistral",
     };
   }
+
   if (process.env.TOGETHER_API_KEY) {
     return {
       url: "https://api.together.xyz/v1/chat/completions",
       key: process.env.TOGETHER_API_KEY,
-      model: process.env.NOVIASIA_MODEL || "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+      model: pick("TOGETHER_API_KEY", "meta-llama/Llama-3.3-70B-Instruct-Turbo")!,
       label: "together",
     };
   }
-  const base = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
-  return {
-    url: `${base.replace(/\/$/, "")}/chat/completions`,
-    key: process.env.OPENAI_API_KEY as string,
-    model: process.env.NOVIASIA_MODEL || "gpt-4o-mini",
-    label: "openai",
-  };
+
+  if (process.env.OPENAI_API_KEY) {
+    const base = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
+    return {
+      url: `${base.replace(/\/$/, "")}/chat/completions`,
+      key: process.env.OPENAI_API_KEY,
+      model: pick("OPENAI_API_KEY", "gpt-4o-mini")!,
+      label: "openai",
+    };
+  }
+
+  return null;
 }
 
 function fallback(character: Character, messages: Pick<Message, "role" | "content">[]) {

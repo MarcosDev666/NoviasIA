@@ -54,17 +54,23 @@ Abrí [http://localhost:3000](http://localhost:3000).
 
 ### Con IA real (opcional)
 
-Copiá `.env.example` a `.env.local` y poné **una** de estas claves:
+Copiá `.env.example` a `.env.local` y poné **una** de estas claves (links y paso a paso
+en **[API-KEYS.md](./API-KEYS.md)**):
 
-| Proveedor | Variable | Modelo por defecto |
-|---|---|---|
-| OpenRouter | `OPENROUTER_API_KEY` | `meta-llama/llama-3.1-8b-instruct` |
-| Groq | `GROQ_API_KEY` | `llama-3.1-8b-instant` |
-| Together | `TOGETHER_API_KEY` | `Llama-3.3-70B-Instruct-Turbo` |
-| OpenAI (o compatible) | `OPENAI_API_KEY` | `gpt-4o-mini` |
+| Proveedor | Dónde sacarla | ¿Tarjeta? | Gratis | Variable |
+|---|---|---|---|---|
+| **Groq** ⭐ | [console.groq.com/keys](https://console.groq.com/keys) | No | ~14.400/día | `GROQ_API_KEY` |
+| **OpenRouter** | [openrouter.ai/keys](https://openrouter.ai/keys) | No | 50/día | `OPENROUTER_API_KEY` |
+| **Cerebras** | [cloud.cerebras.ai](https://cloud.cerebras.ai) | No | rate limit | `CEREBRAS_API_KEY` |
+| **Mistral** | [console.mistral.ai/api-keys](https://console.mistral.ai/api-keys) | No | Plan Experiment | `MISTRAL_API_KEY` |
+| **Together** | [api.together.xyz/settings/api-keys](https://api.together.xyz/settings/api-keys) | Sí | Limitado | `TOGETHER_API_KEY` |
+| **OpenAI** | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | Sí | No | `OPENAI_API_KEY` |
 
-Podés forzar el modelo con `NOVIASIA_MODEL`. Si el proveedor falla o se cae la red, la app
-vuelve sola al motor local: nunca te quedás sin respuesta.
+Orden de preferencia si configurás varias: Groq → Cerebras → OpenRouter → Mistral →
+Together → OpenAI. Podés forzar el modelo con `NOVIASIA_MODEL`.
+
+Verificá qué motor está activo con `curl localhost:3000/api/chat`. Si el proveedor falla
+o se cae la red, la app vuelve sola al motor local: nunca te quedás sin respuesta.
 
 ## 🗂️ Estructura
 
